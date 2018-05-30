@@ -8,13 +8,14 @@ function random(min,max) {
   return num;
 }
 
-function Shape(x,y,color,lastmove, type,exists){    //class Shape
+function Shape(x,y,color,lastmove, action, type,exists){    //class Shape
 	this.x=x;
 	this.y=y;
 	this.color= color;
-	this.lastmove= lastmove; // 4 moves equal 1-4; 1 up, 2 down, 3 right, 4 left => use to control verloxity of bullet
-	this.type = type; // type = 1 => player, type = 2 =>  AI, type = 3 block, type = 4 => river, type = 5 => forest, type = 6 => EGO
-	this.exists=exists;
+	this.lastmove= lastmove; // 4 moves equal 1-4; 1 up, 2 down, 3 right, 4 left, => use to control verloxity of bullet
+	this.action = action; // 0 mean no action, 1 = fire
+	this.type = type; // type = 1 => player, type = 2 =>  AI, type = 3 block, type = 4 => river, type = 5 => forest, type = 6 => EGO, type = 7 => player bullet, type = 8 => AI bullet
+	this.exists=exists; // false mean death, true mean "well, it alive"
 };
 function Bullet(x,y, color, lastmove,type, exist){ // class bullet
 	Shape.call(this,x,y,color,lastmove,type, exist);
@@ -25,8 +26,9 @@ Bullet.prototype.constructor = Bullet;
 
 Bullet.prototype.draw = function(){
 	ctx.beginPath();
-	ctx.fillStyle=this.color; 
-	ctx.arc(this.x, this.y, this.size, 0, 2*Math.PI);
+	
+	ctx.fillStyle= this.color; 
+	ctx.arc(this.x, this.y, 25, 0, 2*Math.PI);
 	ctx.fill();
 };
 
@@ -67,8 +69,8 @@ Forest.prototype.draw= function(){
 
 } 
 
-function TankAI(x,y, lastmove,type, exist){ // class Tank
-	Shape.call(this,x,y,lastmove,type, exist);
+function TankAI(x,y, lastmove,action ,type, exist){ // class Tank
+	Shape.call(this,x,y,lastmove, action, type, exist);
 }
 
 TankAI.prototype.constructor = TankAI;
@@ -79,9 +81,9 @@ TankAI.prototype.draw=function(){
 	ctx.fillStyle = this.color;
 	ctx.fillRect(x,y,50,50);
 };
-function TankPlayer(x,y,lastmove, type, exist){
+function TankPlayer(x,y,lastmove,action, type, exist){
 	var color  = 'rgba(0,150,200,1)';
-	Shape.call(this, x,y,color, lastmove, type, exist);
+	Shape.call(this, x,y,color, lastmove, action, type, exist);
 }
 
 TankPlayer.prototype.draw=function(){
@@ -92,6 +94,7 @@ TankPlayer.prototype.draw=function(){
 }
 TankPlayer.prototype.setControl=function(){
 	var _this=this;
+
 	window.onkeydown=function(e){
 		if(e.keyCode===65 || e.keyCode===37){
 			_this.lastmove=4;		} 
@@ -104,36 +107,40 @@ TankPlayer.prototype.setControl=function(){
 		else if(e.keyCode===83 || e.keyCode===40){
 			_this.lastmove=1;
 		}
+		else if( e.keyCode === 32){
+			_this.action=1;
+		}
 	}
 }	
 TankPlayer.prototype.update=function(){
-	if(this.lastmove ===1){
+	if(this.lastmove ===1 && this.y <= height-50){
 		
 		this.y +=  50;
 	}
-	if(this.lastmove ===2){
+	if(this.lastmove ===2 && this.y > 50){
 		this.y -= 50;
 	}
-	if(this.lastmove === 3){
+	if(this.lastmove === 3 && this.x <= width-50 ){
 		this.x += 50;
 	}
-	if(this. lastmove === 4){
+	if(this. lastmove === 4 && this.x > 50){
 		this.x -= 50;
 	}
+	
 
 }		
-var Player = new TankPlayer(width/2,height,0, 1, true);
+var Player = new TankPlayer(width/2,height,0, 0, 1, true);
 var tanks=[];
 var tankAi;
-var j =0;
+var bullets=[];
 var fps = 15;
- 
+var j = 0;
 Player.setControl();
 
 function loop(){
 	setTimeout(function(){
 		requestAnimationFrame(loop);
-		j+=1;
+		
 		ctx.fillStyle='rgba(0,0,0,1)';
 		ctx.fillRect(0,0,width,height); //draw black frame; from (0,0) to (width, height)
 		while(tanks.length < 5){
@@ -144,8 +151,20 @@ function loop(){
 		}
 		Player.update();
 		Player.draw();
+		if(Player.action === 1){
+			Player.action = 0;
+			j += 1;
+            var newBullet = new Bullet(Player.x-25, Player.y-25,'rgba(0,25,100,1)', Player.lastmove, 7, true);
+            bullets.push(newBullet);
+		}
 		Player.lastmove=0;
 		var i = 0;
+		while(i != bullets.length){
+
+		 	bullets[i].draw();
+		 	i+=1;
+		 }
+		i=0;
 		while(i!=4){
 			i+=1;
 			tanks[i].update();
