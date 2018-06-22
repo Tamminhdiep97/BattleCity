@@ -7,8 +7,19 @@ function random(min,max) {
   var num = Math.floor(Math.random()*(max-min)) + min;
   return num;
 }
-
-function Shape(x,y,color,lastmove, action, type,exists){    //class Shape
+var Context = {
+	canvas: null,
+	context: null,
+	create: function(canvas_tag_id){
+		this.canvas=document.canvas.getContext('2d');
+		return this.context;
+	}
+};
+ctx.create=function(){
+	this.canvas.document.canvas.getContext('2d');
+	return;
+};
+function Shape(x,y,color,lastmove, action, type,exists,image){    //class Shape
 	this.x=x;
 	this.y=y;
 	this.color= color;
@@ -16,6 +27,7 @@ function Shape(x,y,color,lastmove, action, type,exists){    //class Shape
 	this.action = action; // 0 mean no action, 1 = fire
 	this.type = type; // type = 1 => player, type = 2 =>  AI, type = 3 block, type = 4 => river, type = 5 => forest, type = 6 => EGO, type = 7 => player bullet, type = 8 => AI bullet
 	this.exists=exists; // false mean death, true mean "well, it alive"
+	this.image=new Image();
 };
 function Bullet(x,y, color, lastmove,type, exist){ // class bullet
 	Shape.call(this,x,y,color,lastmove,type, exist);
@@ -69,8 +81,10 @@ Forest.prototype.draw= function(){
 
 } 
 
-function TankAI(x,y, lastmove,action ,type, exist){ // class Tank
-	Shape.call(this,x,y,lastmove, action, type, exist);
+function TankAI(x,y, lastmove,action ,type, exist,image){ // class Tank
+	Shape.call(this,x,y,lastmove, action, type, exist,image);
+	this.image = new Image();
+	this.image.src = "aitank.png";
 }
 
 TankAI.prototype.constructor = TankAI;
@@ -81,15 +95,21 @@ TankAI.prototype.draw=function(){
 	ctx.fillStyle = this.color;
 	ctx.fillRect(x,y,50,50);
 };
-function TankPlayer(x,y,lastmove,action, type, exist){
+function TankPlayer(x,y,lastmove,action, type, exist,filename){
 	var color  = 'rgba(0,150,200,1)';
-	Shape.call(this, x,y,color, lastmove, action, type, exist);
+	var image;
+	
+	
+
+	Shape.call(this, x,y,color, lastmove, action, type, exist,image);
+	this.image.src = filename ;
 }
 
 TankPlayer.prototype.draw=function(){
 	ctx.beginPath();
-	ctx.fillStyle = this.color;
-	ctx.fillRect(this.x - 50,this.y -50,50,50);
+	//ctx.fillStyle = this.image;
+	//ctx.fillRect(this.x - 50,this.y -50,50,50);
+	ctx.drawImage(this.image,this.x - 50,this.y -50);
 	//this.lastmove = 0;
 }
 TankPlayer.prototype.setControl=function(){
@@ -107,7 +127,7 @@ TankPlayer.prototype.setControl=function(){
 		else if(e.keyCode===83 || e.keyCode===40){
 			_this.lastmove=1;
 		}
-		else if( e.keyCode === 32){
+		else if( e.keyCode === 32 || e.keyCode === 74){
 			_this.action=1;
 		}
 	}
@@ -129,12 +149,13 @@ TankPlayer.prototype.update=function(){
 	
 
 }		
-var Player = new TankPlayer(width/2,height,0, 0, 1, true);
+
+var Player = new TankPlayer(width/2,height,50, 50, 1, true,"ptank.png");
 var tanks=[];
 var tankAi;
 var bullets=[];
 var fps = 15;
-var j = 0;
+//var j = 0;
 Player.setControl();
 
 function loop(){
@@ -149,11 +170,12 @@ function loop(){
 			tanks.push(TankAI_);
 
 		}
+
 		Player.update();
 		Player.draw();
 		if(Player.action === 1){
 			Player.action = 0;
-			j += 1;
+			
             var newBullet = new Bullet(Player.x-25, Player.y-25,'rgba(0,25,100,1)', Player.lastmove, 7, true);
             bullets.push(newBullet);
 		}
@@ -177,3 +199,4 @@ function loop(){
 }
 
 loop();
+
