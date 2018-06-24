@@ -7,27 +7,16 @@ function random(min,max) {
   var num = Math.floor(Math.random()*(max-min)) + min;
   return num;
 }
-var Context = {
-	canvas: null,
-	context: null,
-	create: function(canvas_tag_id){
-		this.canvas=document.canvas.getContext('2d');
-		return this.context;
-	}
-};
-ctx.create=function(){
-	this.canvas.document.canvas.getContext('2d');
-	return;
-};
-function Shape(x,y,color,lastmove, action, type,exists,image){    //class Shape
+
+function Shape(x,y,lastmove, action, type,exists,image,current_direction){    //class Shape
 	this.x=x;
 	this.y=y;
-	this.color= color;
 	this.lastmove= lastmove; // 4 moves equal 1-4; 1 up, 2 down, 3 right, 4 left, => use to control verloxity of bullet
 	this.action = action; // 0 mean no action, 1 = fire
 	this.type = type; // type = 1 => player, type = 2 =>  AI, type = 3 block, type = 4 => river, type = 5 => forest, type = 6 => EGO, type = 7 => player bullet, type = 8 => AI bullet
 	this.exists=exists; // false mean death, true mean "well, it alive"
 	this.image=new Image();
+	this.current_direction = current_direction; //1 down 2 up 3 left, 4 right;
 };
 function Bullet(x,y, color, lastmove,type, exist){ // class bullet
 	Shape.call(this,x,y,color,lastmove,type, exist);
@@ -44,40 +33,57 @@ Bullet.prototype.draw = function(){
 	ctx.fill();
 };
 
-function Block(x,y,type,exist){ // class Block
-	Shape.call(this,x,y,color,lastmove,type,exist);
+function Block(x,y,type,exists){ // class Block
+	var image;
+	Shape.call(this,x,y,type,exists,image);
+	this.image.src="wall.png";
 }
 Block.prototype.constructor = Block;
 
 Block.prototype.draw= function(){
 	ctx.beginPath();
-	ctx.fillStyle=this.color;
-	ctx.fillRect(x,y,50,50);
+	
+	ctx.drawImage(this.image,this.x-50,this.y-50,50,50);
+
+} 
+function Steel(x,y,type,exist){ // class Block
+	var image;
+	Shape.call(this,x,y,type,exist,image);
+	this.image.src="steel.png";
+}
+Steel.prototype.constructor = Steel;
+
+Steel.prototype.draw= function(){
+	ctx.beginPath();
+	
+	ctx.drawImage(this.image,this.x-50,this.y-50,50,50);
 
 } 
 
 function River(x,y,type,exist){   //class River
-	Shape.call(this,x,y,color,lastmove,type,exist);
+	var image;
+	Shape.call(this,x,y,type,exist,image);
+	this.image.src="water.png";
 }
-River.prototype.constructor = Block;
+River.prototype.constructor = River;
 
 River.prototype.draw= function(){
 	ctx.beginPath();
-	ctx.fillStyle=this.color;
-	ctx.fillRect(x,y,50,50);
+
+	ctx.drawImage(this.image, this.x-50, this.y-50, 50,50);
 
 } 
 
 function Forest(x,y,type,exist){   //class FOREST
-	var Fcolor = 'rgba(0,200,0,1)';
-	Shape.call(this,x,y,Fcolor,lastmove,type,exist);
+	var image;
+	Shape.call(this,x,y,type,exist,image);
+	this.image.src="forest.png";
 }
-Forest.prototype.constructor = Block;
+Forest.prototype.constructor = Forest;
 
 Forest.prototype.draw= function(){
 	ctx.beginPath();
-	ctx.fillStyle=this.color;
-	ctx.fillRect(x,y,50,50);
+	ctx.drawImage(this.image, this.x-50, this.y-50, 50, 50);
 
 } 
 
@@ -95,21 +101,33 @@ TankAI.prototype.draw=function(){
 	ctx.fillStyle = this.color;
 	ctx.fillRect(x,y,50,50);
 };
-function TankPlayer(x,y,lastmove,action, type, exist,filename){
-	var color  = 'rgba(0,150,200,1)';
+function TankPlayer(x,y,lastmove,action, type, exists,current_direction){
+	
 	var image;
 	
 	
 
-	Shape.call(this, x,y,color, lastmove, action, type, exist,image);
-	this.image.src = filename ;
+	Shape.call(this, x,y, lastmove, action, type, exists,image,current_direction);
+	
 }
 
 TankPlayer.prototype.draw=function(){
 	ctx.beginPath();
 	//ctx.fillStyle = this.image;
 	//ctx.fillRect(this.x - 50,this.y -50,50,50);
-	ctx.drawImage(this.image,this.x - 50,this.y -50);
+	if(this.current_direction === 2){
+		this.image.src = "ptank.png" ;
+	}
+	else if(this.current_direction===1){
+	 	this.image.src = "ptank_d.png" ;
+	 }
+	 else if(this.current_direction === 3){
+	 	this.image.src= "ptank_r.png";
+	 }
+	 else if(this.current_direction===4){
+	 	this.image.src = "ptank_l.png";
+		}
+	ctx.drawImage(this.image,this.x - 50,this.y -50,50,50);
 	//this.lastmove = 0;
 }
 TankPlayer.prototype.setControl=function(){
@@ -130,7 +148,9 @@ TankPlayer.prototype.setControl=function(){
 		else if( e.keyCode === 32 || e.keyCode === 74){
 			_this.action=1;
 		}
+		_this.current_direction	= _this.lastmove;
 	}
+
 }	
 TankPlayer.prototype.update=function(){
 	if(this.lastmove ===1 && this.y <= height-50){
@@ -150,9 +170,23 @@ TankPlayer.prototype.update=function(){
 
 }		
 
-var Player = new TankPlayer(width/2,height,50, 50, 1, true,"ptank.png");
-var tanks=[];
+var Player = new TankPlayer(width/2,height,0, 0, 1, true, 2); //lastmove,action, type, exists,current_direction)
 var tankAi;
+var tanks=[];
+var river_Array= [];
+var forest_Array= [];
+var block_Array=[];
+var block = new Block(550,400,1, true);
+block_Array.push(block);
+var steel_Array=[];
+var steel = new Steel(400,100,1,true);
+steel_Array.push(steel);
+steel = new Steel(450, 100,1, true);
+steel_Array.push(steel);
+var forest = new Forest(400,200,1,true);
+forest_Array.push(forest);
+var river = new River(500,300,1,true);
+river_Array.push(river);
 var bullets=[];
 var fps = 15;
 //var j = 0;
@@ -170,9 +204,25 @@ function loop(){
 			tanks.push(TankAI_);
 
 		}
-
+		var i =0;
+		for(i; i < river_Array.length;i++) // draw river
+			river_Array[i].draw();
 		Player.update();
 		Player.draw();
+
+		i =0 ;
+		for(i;i< forest_Array.length;i++){ //draw forest
+			forest_Array[i].draw();
+		}
+		
+		i=0;
+		for(; i < block_Array.length;i++) // draw block
+			block_Array[i].draw();
+
+		i = 0;
+		for(; i < steel_Array.length; i++){
+			steel_Array[i].draw();
+		}
 		if(Player.action === 1){
 			Player.action = 0;
 			
@@ -180,7 +230,7 @@ function loop(){
             bullets.push(newBullet);
 		}
 		Player.lastmove=0;
-		var i = 0;
+		i = 0;
 		while(i != bullets.length){
 
 		 	bullets[i].draw();
