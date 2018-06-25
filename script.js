@@ -18,8 +18,9 @@ function Shape(x,y,lastmove, action, type,exists,image,current_direction){    //
 	this.image=new Image();
 	this.current_direction = current_direction; //1 down 2 up 3 left, 4 right;
 };
-function Bullet(x,y, color, lastmove,type, exist){ // class bullet
-	Shape.call(this,x,y,color,lastmove,type, exist);
+function Bullet(x,y, lastmove, type, exist){ // class bullet
+	var image;
+	Shape.call(this,x,y,lastmove,type, exist,image);
 
 }
 
@@ -27,12 +28,26 @@ Bullet.prototype.constructor = Bullet;
 
 Bullet.prototype.draw = function(){
 	ctx.beginPath();
-	
-	ctx.fillStyle= this.color; 
-	ctx.arc(this.x, this.y, 25, 0, 2*Math.PI);
-	ctx.fill();
+	this.image.src = "bullet.png";
+	ctx.drawImage(this.image, this.x-12,this.y-12,25,25);
 };
+Bullet.prototype.update = function(){
+	if(this.lastmove ===1 ){
+		
+		this.y +=  50;
+	}
+	else if(this.lastmove ===2 ){
+		this.y -= 50;
+	}
+	else if(this.lastmove === 3  ){
+		this.x += 50;
+	}
+	else if(this. lastmove === 4 ){
+		this.x -= 50;
+	}
+	
 
+};
 function Block(x,y,type,exists){ // class Block
 	var image;
 	Shape.call(this,x,y,type,exists,image);
@@ -135,20 +150,24 @@ TankPlayer.prototype.setControl=function(){
 
 	window.onkeydown=function(e){
 		if(e.keyCode===65 || e.keyCode===37){
-			_this.lastmove=4;		} 
+			_this.lastmove	=4;
+			_this.current_direction = 4;		} 
 		else if(e.keyCode===68 || e.keyCode===39){
 			_this.lastmove=3;
+			_this.current_direction=3;
 		}
 		else if(e.keyCode===87 || e.keyCode===38){
 			_this.lastmove=2;
+			_this.current_direction=2
 		}
 		else if(e.keyCode===83 || e.keyCode===40){
-			_this.lastmove=1;
+			_this.lastmove=	1;
+			_this.current_direction=1;
 		}
 		else if( e.keyCode === 32 || e.keyCode === 74){
 			_this.action=1;
 		}
-		_this.current_direction	= _this.lastmove;
+		
 	}
 
 }	
@@ -190,6 +209,7 @@ river_Array.push(river);
 var bullets=[];
 var fps = 15;
 //var j = 0;
+var map=[];
 Player.setControl();
 
 function loop(){
@@ -220,13 +240,14 @@ function loop(){
 			block_Array[i].draw();
 
 		i = 0;
-		for(; i < steel_Array.length; i++){
+		for(; i < steel_Array.length; i++){ //draw steel
 			steel_Array[i].draw();
 		}
 		if(Player.action === 1){
 			Player.action = 0;
 			
-            var newBullet = new Bullet(Player.x-25, Player.y-25,'rgba(0,25,100,1)', Player.lastmove, 7, true);
+            var newBullet = new Bullet(Player.x-25, Player.y-25, Player.current_direction, 7, true);
+            console.log(Player.current_direction);
             bullets.push(newBullet);
 		}
 		Player.lastmove=0;
@@ -234,6 +255,13 @@ function loop(){
 		while(i != bullets.length){
 
 		 	bullets[i].draw();
+		 	
+		 	bullets[i].update();
+		 	if(bullets[i].y > height || bullets[i].y < 0 || bullets[i].x < 0 || bullets[i].x > width){
+		 			bullets.splice(i,1);
+		 			i-=1;
+		 	}
+
 		 	i+=1;
 		 }
 		i=0;
