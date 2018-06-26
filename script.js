@@ -192,18 +192,107 @@ TankPlayer.prototype.setControl=function(){
 
 }	
 TankPlayer.prototype.update=function(){
-	if(this.lastmove ===1 && this.y <= height-50){
-		
-		this.y +=  50;
+	var i;
+	var j; 
+	if(this.lastmove ===1 && this.y <= height-50 ){
+		i=0;
+		j=0;
+
+		for(; i < steel_Array.length;i++)
+			if(this.y + 50 === steel_Array[i].y && this.x === steel_Array[i].x)
+				break;
+			if(i === steel_Array.length)
+				j+=1;
+		i=0;
+		for(; i < river_Array.length;i++)
+			if(this.y + 50 === river_Array[i].y && this.x === river_Array[i].x)
+				break;
+			if(i === river_Array.length)
+				j+=1;
+		i=0;
+		for(; i < block_Array.length;i++)
+			if(this.y + 50 === block_Array[i].y && this.x === block_Array[i].x)
+				break;
+			if(i === block_Array.length)
+				j+=1;
+		if(j===3)
+			this.y +=  50;
 	}
 	if(this.lastmove ===2 && this.y > 50){
-		this.y -= 50;
+		 j=0;
+		 i =0 ;
+		 for(; i <steel_Array.length; i++)
+		 	if(this.y-50 === steel_Array[i].y && this.x === steel_Array[i].x)
+		 		break;
+		 	if(i === steel_Array.length)
+		 		j+=1;
+		 i =0 ;
+		 for(; i <river_Array.length; i++)
+		 	if(this.y-50 === river_Array[i].y && this.x === river_Array[i].x)
+		 		break;
+		 	if(i === river_Array.length)
+		 		j+=1;
+		 
+		 i =0 ;
+		 for(; i <block_Array.length; i++)
+		 	if(this.y-50 === block_Array[i].y && this.x === block_Array[i].x)
+		 		break;
+		 	if(i === block_Array.length)
+		 		j+=1;	
+		 if(j===3)
+				this.y -= 50;
 	}
 	if(this.lastmove === 3 && this.x <= width-50 ){
-		this.x += 50;
-	}
+		 j = 0;
+		 i = 0 ;
+		for(; i <steel_Array.length; i++)
+		 	if(this.y === steel_Array[i].y && this.x+50 === steel_Array[i].x){
+		 		break;
+		 	}
+		 	if(i === steel_Array.length)
+		 		j+=1;
+		 i = 0 ;
+		for(; i <river_Array.length; i++)
+		 	if(this.y === river_Array[i].y && this.x+50 === river_Array[i].x){
+		 		break;
+		 	}
+		 	if(i === river_Array.length)
+		 		j+=1;
+		  i = 0 ;
+		for(; i <block_Array.length; i++)
+		 	if(this.y === block_Array[i].y && this.x+50 === block_Array[i].x){
+		 		break;
+		 	}
+		 	if(i === block_Array.length)
+		 		j+=1;
+		 if(j===3)
+			this.x += 50;
+		}
 	if(this. lastmove === 4 && this.x > 50){
-		this.x -= 50;
+		j = 0;
+		 i =0 ;
+		for(; i <steel_Array.length; i++)
+		 	if(this.y === steel_Array[i].y && this.x-50 === steel_Array[i].x){
+		 		break;
+		 	}
+		 	if(i === steel_Array.length)
+		 		j+=1;
+		i = 0 ;
+		for(; i <river_Array.length; i++)
+		 	if(this.y === river_Array[i].y && this.x-50 === river_Array[i].x){
+		 		break;
+		 	}
+		 	if(i === river_Array.length)
+		 		j+=1;
+		  i = 0 ;
+		for(; i <block_Array.length; i++)
+		 	if(this.y === block_Array[i].y && this.x-50 === block_Array[i].x){
+		 		break;
+		 	}
+		 	if(i === block_Array.length)
+		 		j+=1;
+		 if(j===3)
+				this.x -= 50;
 	}
 	
 
