@@ -29,7 +29,7 @@ Bullet.prototype.constructor = Bullet;
 Bullet.prototype.draw = function(){
 	ctx.beginPath();
 	this.image.src = "bullet.png";
-	ctx.drawImage(this.image, this.x-12,this.y-12,25,25);
+	ctx.drawImage(this.image, this.x-35,this.y-35,25,25);
 };
 Bullet.prototype.update = function(){
 	if(this.lastmove ===1 ){
@@ -48,6 +48,17 @@ Bullet.prototype.update = function(){
 	
 
 };
+Bullet.prototype.collisionDetect=function(){
+		var i=0;
+		for(; i < block_Array.length; i++){
+			if(this.x-35 > block_Array[i].x-50 && this.x-35 < block_Array[i].x && this.y-35 > block_Array[i].y -50 && this.y-35 < block_Array[i].y){
+				block_Array.splice(i,1);
+				
+			//	bullets.splice(this,1);
+				return true;
+			}
+		}
+}
 function Block(x,y,type,exists){ // class Block
 	var image;
 	Shape.call(this,x,y,type,exists,image);
@@ -61,6 +72,7 @@ Block.prototype.draw= function(){
 	ctx.drawImage(this.image,this.x-50,this.y-50,50,50);
 
 } 
+
 function Steel(x,y,type,exist){ // class Block
 	var image;
 	Shape.call(this,x,y,type,exist,image);
@@ -73,8 +85,16 @@ Steel.prototype.draw= function(){
 	
 	ctx.drawImage(this.image,this.x-50,this.y-50,50,50);
 
-} 
-
+} ;
+Steel.prototype.collisionDetect = function(){
+	var i = 0;
+	for(;i < bullets.length; i++){
+		if(this.x-50 < bullets[i].x-35 && this.x > bullets[i].x-35  && this.y-50 < bullets[i].y-35  && this.y > bullets[i].y-35){
+			bullets.splice(i,1);
+			i-=1;
+		}
+	}
+};
 function River(x,y,type,exist){   //class River
 	var image;
 	Shape.call(this,x,y,type,exist,image);
@@ -142,7 +162,7 @@ TankPlayer.prototype.draw=function(){
 	 else if(this.current_direction===4){
 	 	this.image.src = "ptank_l.png";
 		}
-	ctx.drawImage(this.image,this.x - 50,this.y -50,50,50);
+	ctx.drawImage(this.image,this.x-50,this.y-50,50,50);
 	//this.lastmove = 0;
 }
 TankPlayer.prototype.setControl=function(){
@@ -189,7 +209,7 @@ TankPlayer.prototype.update=function(){
 
 }		
 
-var Player = new TankPlayer(width/2,height,0, 0, 1, true, 2); //lastmove,action, type, exists,current_direction)
+var Player =  new TankPlayer(width/2,height,0, 0, 1, true, 2);//lastmove,action, type, exists,current_direction)
 var tankAi;
 var tanks=[];
 var river_Array= [];
@@ -200,7 +220,10 @@ block_Array.push(block);
 var steel_Array=[];
 var steel = new Steel(400,100,1,true);
 steel_Array.push(steel);
-steel = new Steel(450, 100,1, true);
+steel = new Steel(450, 300,1, true);
+steel_Array.push(steel);
+steel = new Steel(450,50,1,true);
+
 steel_Array.push(steel);
 var forest = new Forest(400,200,1,true);
 forest_Array.push(forest);
@@ -239,14 +262,11 @@ function loop(){
 		for(; i < block_Array.length;i++) // draw block
 			block_Array[i].draw();
 
-		i = 0;
-		for(; i < steel_Array.length; i++){ //draw steel
-			steel_Array[i].draw();
-		}
+	
 		if(Player.action === 1){
 			Player.action = 0;
 			
-            var newBullet = new Bullet(Player.x-25, Player.y-25, Player.current_direction, 7, true);
+            var newBullet = new Bullet(Player.x, Player.y, Player.current_direction, 7, true);
             console.log(Player.current_direction);
             bullets.push(newBullet);
 		}
@@ -257,7 +277,15 @@ function loop(){
 		 	bullets[i].draw();
 		 	
 		 	bullets[i].update();
-		 	if(bullets[i].y > height || bullets[i].y < 0 || bullets[i].x < 0 || bullets[i].x > width){
+
+		 	var j = bullets[i].collisionDetect();
+
+		 	if(j===true){
+		 		bullets.splice(i,1);
+		 		i-=1;
+		 	}
+		 	else 
+		    if(bullets[i].y > height || bullets[i].y < 0 || bullets[i].x < 0 || bullets[i].x > width){
 		 			bullets.splice(i,1);
 		 			i-=1;
 		 	}
@@ -265,6 +293,11 @@ function loop(){
 		 	i+=1;
 		 }
 		i=0;
+			i = 0;
+		for(; i < steel_Array.length; i++){ //draw steel
+			steel_Array[i].draw();
+			steel_Array[i].collisionDetect();
+		}
 		while(i!=4){
 			i+=1;
 			tanks[i].update();
