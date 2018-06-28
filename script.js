@@ -18,9 +18,22 @@ function Shape(x,y,lastmove, action, type,exists,image,current_direction){    //
 	this.image=new Image();
 	this.current_direction = current_direction; //1 down 2 up 3 left, 4 right;
 };
+function Ego(x,y,type,exists){
+	var action;
+	var lastmove;
+	var image;
+	Shape.call(this,x,y,lastmove,action,type,exists,image);
+	this.image.src="ego.png";
+};
+Ego.prototype.constructor= Ego;
+Ego.prototype.draw=function(){
+	ctx.beginPath();
+	ctx.drawImage(this.image, this.x-50, this.y-50,50,50);
+}
 function Bullet(x,y, lastmove, type, exist){ // class bullet
 	var image;
-	Shape.call(this,x,y,lastmove,type, exist,image);
+	var action;
+	Shape.call(this,x,y,lastmove, action, type, exist,image);
 
 }
 
@@ -56,6 +69,29 @@ Bullet.prototype.collisionDetect=function(){
 				
 			//	bullets.splice(this,1);
 				return true;
+			}
+		}
+		if(this.x-35 > ego.x-50 && this.x-35 <ego.x && this.y-35 > ego.y-50 && this.y -35 <ego.y){
+			ego.exists=false;
+			return true;
+		}
+		
+		if(this.x-35 > Player.x-50 && this.x-35 < Player.x && this.y-35 > Player.y-50 && this.y-35 < Player.y){
+				
+			Player.exists=false;
+			return true;
+		}
+			
+		
+		
+		else //otherwise
+		{
+			for(i=0; i < tanks.length; i++){
+				if(this.x-35 > tanks[i].x-50 && this.x-35 < tanks[i].x && this.y-35 > tanks[i].y -50 && this.y-35 < tanks[i].y){
+					if(this.type === 7) // if the bullet which hit ai tank is from player => tank destroy, else, the bullet is destroyed
+						tanks.splice(i,1);
+					return true;
+				}
 			}
 		}
 }
@@ -122,19 +158,37 @@ Forest.prototype.draw= function(){
 
 } 
 
-function TankAI(x,y, lastmove,action ,type, exist,image){ // class Tank
-	Shape.call(this,x,y,lastmove, action, type, exist,image);
-	this.image = new Image();
-	this.image.src = "aitank.png";
+function TankAI(x,y, lastmove,action ,type, exists,current_direction){ // class Tank
+	var image;
+	Shape.call(this,x,y,lastmove, action, type, exists,image,current_direction);
+	
 }
 
 TankAI.prototype.constructor = TankAI;
-TankAI.prototype.update=function(){ var i};
+TankAI.prototype.setMove1=function(){
+	
+
+};
+TankAI.prototype.update=function(){ //MOVE;
+};
 
 TankAI.prototype.draw=function(){
-	ctx.beginPath();
-	ctx.fillStyle = this.color;
-	ctx.fillRect(x,y,50,50);
+		ctx.beginPath();
+	//ctx.fillStyle = this.image;
+	//ctx.fillRect(this.x - 50,this.y -50,50,50);
+	if(this.current_direction === 2){
+		this.image.src = "aitank.png" ;
+	}
+	else if(this.current_direction===1){
+	 	this.image.src = "aitank_d.png" ;
+	 }
+	 else if(this.current_direction === 3){
+	 	this.image.src= "aitank_r.png";
+	 }
+	 else if(this.current_direction===4){
+	 	this.image.src = "aitank_l.png";
+		}
+	ctx.drawImage(this.image,this.x-50,this.y-50,50,50);
 };
 function TankPlayer(x,y,lastmove,action, type, exists,current_direction){
 	
@@ -197,7 +251,8 @@ TankPlayer.prototype.update=function(){
 	if(this.lastmove ===1 && this.y <= height-50 ){
 		i=0;
 		j=0;
-
+		if(this.y+50 != ego.y || this.x != ego.x)
+			j+=1;
 		for(; i < steel_Array.length;i++)
 			if(this.y + 50 === steel_Array[i].y && this.x === steel_Array[i].x)
 				break;
@@ -215,12 +270,14 @@ TankPlayer.prototype.update=function(){
 				break;
 			if(i === block_Array.length)
 				j+=1;
-		if(j===3)
+		if(j===4)
 			this.y +=  50;
 	}
 	if(this.lastmove ===2 && this.y > 50){
 		 j=0;
 		 i =0 ;
+		 if(this.y-50 != ego.y || this.x != ego.x)
+			j+=1;
 		 for(; i <steel_Array.length; i++)
 		 	if(this.y-50 === steel_Array[i].y && this.x === steel_Array[i].x)
 		 		break;
@@ -239,12 +296,14 @@ TankPlayer.prototype.update=function(){
 		 		break;
 		 	if(i === block_Array.length)
 		 		j+=1;	
-		 if(j===3)
+		 if(j===4)
 				this.y -= 50;
 	}
 	if(this.lastmove === 3 && this.x <= width-50 ){
 		 j = 0;
 		 i = 0 ;
+		 if(this.y != ego.y || this.x+50 != ego.x)
+			j+=1;
 		for(; i <steel_Array.length; i++)
 		 	if(this.y === steel_Array[i].y && this.x+50 === steel_Array[i].x){
 		 		break;
@@ -265,12 +324,14 @@ TankPlayer.prototype.update=function(){
 		 	}
 		 	if(i === block_Array.length)
 		 		j+=1;
-		 if(j===3)
+		 if(j===4)
 			this.x += 50;
 		}
 	if(this. lastmove === 4 && this.x > 50){
 		j = 0;
 		 i =0 ;
+		 if(this.y != ego.y || this.x-50 != ego.x)
+			j+=1;
 		for(; i <steel_Array.length; i++)
 		 	if(this.y === steel_Array[i].y && this.x-50 === steel_Array[i].x){
 		 		break;
@@ -291,27 +352,34 @@ TankPlayer.prototype.update=function(){
 		 	}
 		 	if(i === block_Array.length)
 		 		j+=1;
-		 if(j===3)
+		 if(j===4)
 				this.x -= 50;
 	}
 	
 
 }		
 
-var Player =  new TankPlayer(width/2,height,0, 0, 1, true, 2);//lastmove,action, type, exists,current_direction)
+var Player =  new TankPlayer(width/2-100,height,0, 0, 1, true, 2);//lastmove,action, type, exists,current_direction)
 var tankAi;
+var ego = new Ego(width/2,height,7,true);
 var tanks=[];
 var river_Array= [];
 var forest_Array= [];
 var block_Array=[];
-var block = new Block(550,400,1, true);
+var block = new Block(550,400,3, true);
+block_Array.push(block);
+block= new Block(300,350,3,true);
+block_Array.push(block);
+block= new Block(350,350,3,true);
+block_Array.push(block);
+block= new Block(400,350,3,true);
 block_Array.push(block);
 var steel_Array=[];
 var steel = new Steel(400,100,1,true);
 steel_Array.push(steel);
 steel = new Steel(450, 300,1, true);
 steel_Array.push(steel);
-steel = new Steel(450,50,1,true);
+steel = new Steel(450,150,1,true);
 
 steel_Array.push(steel);
 var forest = new Forest(400,200,1,true);
@@ -319,29 +387,36 @@ forest_Array.push(forest);
 var river = new River(500,300,1,true);
 river_Array.push(river);
 var bullets=[];
-var fps = 15;
+var fps = 7;
 //var j = 0;
 var map=[];
 Player.setControl();
+	var x =0
+	while(tanks.length < 5){
 
+			var TankAI_ = new TankAI(x,50,1,0,2,true,4);
+			//x,y, lastmove,action ,type, exists
+			x+=150;
+				//init Tank 3 loai 2 ngu 1 vua 1 thong minh
+			tanks.push(TankAI_);
+
+		}
 function loop(){
+
+		
 	setTimeout(function(){
 		requestAnimationFrame(loop);
 		
 		ctx.fillStyle='rgba(0,0,0,1)';
 		ctx.fillRect(0,0,width,height); //draw black frame; from (0,0) to (width, height)
-		while(tanks.length < 5){
-			var TankAI_ = new TankAI();
-				//init Tank 3 loai 2 ngu 1 vua 1 thong minh
-			tanks.push(TankAI_);
-
-		}
+	
+		
 		var i =0;
 		for(i; i < river_Array.length;i++) // draw river
 			river_Array[i].draw();
 		Player.update();
 		Player.draw();
-
+		ego.draw();
 		i =0 ;
 		for(i;i< forest_Array.length;i++){ //draw forest
 			forest_Array[i].draw();
@@ -356,7 +431,7 @@ function loop(){
 			Player.action = 0;
 			
             var newBullet = new Bullet(Player.x, Player.y, Player.current_direction, 7, true);
-            console.log(Player.current_direction);
+            
             bullets.push(newBullet);
 		}
 		Player.lastmove=0;
@@ -387,16 +462,22 @@ function loop(){
 			steel_Array[i].draw();
 			steel_Array[i].collisionDetect();
 		}
-		while(i!=4){
-			i+=1;
+		i=0;
+		while(i!=tanks.length){
+			
 			tanks[i].update();
+			tanks[i].draw();
+			i+=1;
 		}
 		
 	
-
+	
 	},
 	1000 / fps);
+	
 }
 
 loop();
+
+	
 
