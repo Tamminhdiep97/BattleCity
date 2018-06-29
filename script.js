@@ -54,8 +54,7 @@ Bullet.prototype.draw = function(){
 	ctx.drawImage(this.image, this.x-35,this.y-35,25,25);
 };
 Bullet.prototype.update = function(){
-	if(this.lastmove ===1 ){
-		
+	if(this.lastmove ===1 ){	
 		this.y +=  50;
 	}
 	else if(this.lastmove ===2 ){
@@ -72,6 +71,7 @@ Bullet.prototype.update = function(){
 };
 Bullet.prototype.collisionDetect=function(){
 		var i=0;
+
 		for(; i < block_Array.length; i++){
 			if(this.x-35 > block_Array[i].x-50 && this.x-35 < block_Array[i].x && this.y-35 > block_Array[i].y -50 && this.y-35 < block_Array[i].y){
 				block_Array.splice(i,1);
@@ -639,7 +639,9 @@ Player.setControl();
 
 		}
 function loop(){
-
+	if(ego.exists===false){
+		return;
+	}
 		
 	setTimeout(function(){
 		requestAnimationFrame(loop);
