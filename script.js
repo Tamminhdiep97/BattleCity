@@ -174,6 +174,22 @@ function TankAI(x,y, lastmove,action ,type, exists,current_direction){ // class 
 }
 
 TankAI.prototype.constructor = TankAI;
+TankAI.prototype.collisionDetect=function(){
+	var i =0;
+	for(; i < tanks.length; i++){
+		if(!(this === tanks[i])){
+			console.log("check");
+			if((this.lastmove === 1) && (tanks[i].x === this.x) && (tanks[i].y===this.y+50))
+				this.lastmove =0 ;
+			if((this.lastmove === 2) && (tanks[i].x === this.x) && (tanks[i].y===this.y-50))
+				this.lastmove =0 ;
+			if((this.lastmove === 3) && (tanks[i].x === this.x+50) && (tanks[i].y===this.y))
+				this.lastmove =0 ;
+			if((this.lastmove === 4) && (tanks[i].x === this.x-50) && (tanks[i].y===this.y))
+				this.lastmove =0 ;
+		}
+	}
+}
 TankAI.prototype.setMove1=function(){
 	var up=999, down=999, left=999, right=999; 
 	
@@ -366,6 +382,8 @@ TankAI.prototype.setMove1=function(){
 
 };
 TankAI.prototype.update=function(){ //MOVE;
+	if(this.lastmove === 0){}
+		else
 	if(this.lastmove === 1){
 		this.y+=50;
 		this.current_direction=1;
@@ -685,6 +703,7 @@ function loop(){
 		while(i!=tanks.length){
 			//
 			tanks[i].setMove1();
+			tanks[i].collisionDetect();
 			tanks[i].update();
 			tanks[i].draw();
 			i+=1;
