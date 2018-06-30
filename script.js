@@ -17,6 +17,82 @@ function Min(a,b,c,d){
 		min =d;
 	return min;
 }
+function checkSteel(x,y){
+	var i=0;
+	for(;i<steel_Array.length;i++){
+		if(steel_Array[i].x === x && steel_Array[i].y === y){
+			return true;
+		}
+	}
+	return false;
+}
+function checkWater(x,y){
+	var i=0;
+	for(;i<river_Array.length;i++){
+		if(river_Array[i].x === x && river_Array[i].y === y){
+			return true;
+		}
+	}
+	return false;
+}
+function checkBlock(x,y){
+	var i=0;
+	for(;i<block_Array.length;i++){
+		if(block_Array[i].x === x && block_Array[i].y === y){
+			return true;
+		}
+	}
+	return false;
+}
+
+function Map_update(){
+	var A=new Array();
+	var check=false;
+	var x,y;
+	for(y=50;y<=height; y+=50){
+		A[(y/50)-1]=new Array();
+		
+		for(x=50;x<=width;x+=50){
+				
+			if(checkBlock(x,y)||checkWater(x,y)||checkSteel(x,y)){
+				A[(y/50)-1].push(1);
+				
+			}
+			else A[(y/50)-1].push(0);
+				
+			
+		}
+
+	}
+	var i;
+	for(i=0; i < bullets.length; i ++){
+		if(bullets[i].type === 7){
+			if(bullets[i].lastmove === 1){
+				for(y=bullets[i].y; y <= height;y+=50)
+					A[y/50-1][bullets[i].x/50-1]=1;
+			}
+			else
+				if(bullets[i].lastmove === 2){
+					console.log("set");
+					for(y=bullets[i].y; y >= 50;y-=50)
+					A[y/50-1][bullets[i].x/50-1]=1;
+				}
+					else
+						if(bullets[i].lastmove===3){
+							for(x=bullets[i].x; x <= width;x+=50)
+							A[bullets[i].y/50-1][x/50-1]=1;
+						}
+							else
+							{
+								for(x=bullets[i].x; x <= width;x-=50)
+								A[bullets[i].y/50-1][x/50-1]=1;
+							}
+				}
+		}
+	
+	return A;
+
+}
 function Shape(x,y,lastmove, action, type,exists,image,current_direction){    //class Shape
 	this.x=x;
 	this.y=y;
@@ -178,7 +254,7 @@ TankAI.prototype.collisionDetect=function(){
 	var i =0;
 	for(; i < tanks.length; i++){
 		if(!(this === tanks[i])){
-			console.log("check");
+		//	console.log("check");
 			if((this.lastmove === 1) && (tanks[i].x === this.x) && (tanks[i].y===this.y+50))
 				this.lastmove =0 ;
 			if((this.lastmove === 2) && (tanks[i].x === this.x) && (tanks[i].y===this.y-50))
@@ -246,7 +322,7 @@ TankAI.prototype.setMove1=function(){
 	i=0;
 	j=0;
 	if(left!=1000){
-		console.log("left");
+	//	console.log("left");
 		for(; i < block_Array.length; i ++){
 			if(this.x - 50 === block_Array[i].x && this.y === block_Array[i].y){
 				left=1000;
@@ -273,14 +349,14 @@ TankAI.prototype.setMove1=function(){
 						break;
 					}
 				}
-				console.log(i);
+				//console.log(i);
 				if(i===river_Array.length) j+=1;
 
 			}
 		}
 		if(j === 3){
 			j=0;
-			console.log(Math.abs(this.x - 50 - ego.x) + Math.abs(this.y - ego.y));
+		//	console.log(Math.abs(this.x - 50 - ego.x) + Math.abs(this.y - ego.y));
 			left = (Math.abs(this.x - 50 - ego.x) + Math.abs(this.y - ego.y))/50;
 			
 		}
@@ -364,10 +440,10 @@ TankAI.prototype.setMove1=function(){
 			
 		}
 	}
-	console.log("right",right);
-	console.log("left",left);
-	console.log("up",up);
-	console.log("down",down);
+//	console.log("right",right);
+//	console.log("left",left);
+//	console.log("up",up);
+//	console.log("down",down);
 	var move = Min(up, down, left, right);
 	if(move === up)
 		this.lastmove= 2;
@@ -381,6 +457,10 @@ TankAI.prototype.setMove1=function(){
 
 
 };
+
+TankAI.prototype.setMove2=function(){
+
+}
 TankAI.prototype.update=function(){ //MOVE;
 	if(this.lastmove === 0){}
 		else
@@ -603,9 +683,15 @@ var tanks=[];
 var river_Array= [];
 var forest_Array= [];
 var block_Array=[];
-var block = new Block(550,400,3, true);
+var block = new Block(50,50,3, true);
 block_Array.push(block);
 block= new Block(300,350,3,true);
+block_Array.push(block);
+block= new Block(500,350,3,true);
+block_Array.push(block);
+block= new Block(550,350,3,true);
+block_Array.push(block);
+block= new Block(450,350,3,true);
 block_Array.push(block);
 block= new Block(350,350,3,true);
 block_Array.push(block);
@@ -626,7 +712,8 @@ river_Array.push(river);
 var bullets=[];
 var fps = 3;
 //var j = 0;
-var map=[];
+var map=new Array;
+
 Player.setControl();
 	var x =200
 	while(tanks.length < 5){
@@ -711,7 +798,7 @@ function loop(){
 			i+=1;
 		}
 		
-	
+	map=Map_update();
 	
 	},
 	1000 / fps);
