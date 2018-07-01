@@ -463,8 +463,8 @@ function Point(x,y){
 	this.y=y;
 }
 function H(x,y){  //2 TARGET
-	var max1 = Math.max(Math.abs(x-Player.x),Math.abs(y-Player.y));
-	var max2 = Math.max(Math.abs(x-ego.x),Math.abs(y-ego.y));
+	var max1 =Math.abs(x-Player.x)+Math.abs(y-Player.y);
+	var max2 = Math.abs(x-ego.x)+Math.abs(y-ego.y);
 	return Math.max(max1,max2);
 }
 TankAI.prototype.setMove2=function(){ 
@@ -544,15 +544,22 @@ TankAI.prototype.setMove2=function(){
 		for(; i < Q.length; i++){
 			q = Q[i];
 			var j = 0;
+			var k= 0;
 			var check_open=false;
 			var check_close=false;
 			for(; j < open.length; j++){
-				if(q.x===open[j].x && q.y === open[j].y)
+				if(q.x===open[j].x && q.y === open[j].y){
 					check_open=true;
+					break;
+				}
+
 			}
-			for(j=0; j < close.length; j++){
-				if(q.x===close[j].x && q.y === close[j].y)
+			for(; k < close.length; k++){
+				if(q.x===close[k].x && q.y === close[k].y){
 					check_close=true;
+					break;
+				}
+
 			}
 			if(check_open===false && check_close===false) // th1
 			{
@@ -598,28 +605,34 @@ TankAI.prototype.setMove2=function(){
 			var vertex_index1 = e1;
 			
 			var vertex_index2 = e2;
-			
+			var v1,v2;
 			
 			while(!(vertex_index1.x === st.x && vertex_index1.y === st.y) && !(vertex_index2.x === st.x && vertex_index2.y === st.y)){
 				console.log(vertex_index1);
 				console.log(vertex_index2);
 				if(prev.has(vertex_index1)===true){
 					//console.log(prev);
-					vertex_index1=prev.get(vertex_index1);
+					v1 = prev.get(vertex_index1);
+					if(v1 === st){
+						next=1;
+						break;
+					}
+					else
+						vertex_index1=v1;
 				}
 				else
 					if(prev.has(vertex_index2)===true){
-						vertex_index2=prev.get(vertex_index2);
+						v2 = prev.get(vertex_index1);
+						if(v2 === st){
+							next=2;
+							break;
+						}
+						else
+							vertex_index2=v2;
 					}
-				if(vertex_index1===st){
-					next=1;
+				
 				}
-				else{
-					if(vertex_index2===st){
-						next=2;
-					}
-				}
-			}
+			
 			if(next===1){
 				dx = vertex_index1.x - this.x;
 				dy = vertex_index1.y - this.y;
@@ -902,7 +915,7 @@ forest_Array.push(forest);
 var river = new River(500,300,1,true);
 river_Array.push(river);
 var bullets=[];
-var fps = 3;
+var fps = 2;
 //var j = 0;
 var map=new Array;
 
