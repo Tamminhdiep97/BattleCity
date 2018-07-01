@@ -1,3 +1,4 @@
+
 var canvas = document.querySelector('canvas');
 var ctx = canvas.getContext('2d') ; //draw 2d;
 var width = canvas.width ;
@@ -492,6 +493,8 @@ TankAI.prototype.setMove2=function(){
 		if((p.x===e1.x && p.y===e1.y) || (p.x===e2.x && p.y===e2.y)){
 			close.push(p);
 			flag=true;
+			var q = prev.get(p);
+			prev.set(e1,q);
 			break;
 		}
 
@@ -593,8 +596,11 @@ TankAI.prototype.setMove2=function(){
 			var next;
 			var dx, dy;
 			var vertex_index1 = e1;
+			
 			var vertex_index2 = e2;
-			while((vertex_index1.x != st.x && vertex_index1.y != st.y) && (vertex_index2.x != st.x && vertex_index2.y != st.y)){
+			
+			
+			while(!(vertex_index1.x === st.x && vertex_index1.y === st.y) && !(vertex_index2.x === st.x && vertex_index2.y === st.y)){
 				console.log(vertex_index1);
 				console.log(vertex_index2);
 				if(prev.has(vertex_index1)===true){
@@ -993,20 +999,21 @@ function loop(){
 
 loop();
 
-
-
 /*
+
+
 function point(x,y){
   this.x=x;
   this.y = y;
 };
 var m = new Map();
 
-var b = new point(20,1);
-
+var c = new point(10,1);
+var b = new point (20,1)
 var a = new point(20,1);
-m.set(a,b);		
+m.set(a,c);		
 if(m.has(a) === true){
-console.log(m.has(a));
+console.log(m.has(b));
+
 }
 */
