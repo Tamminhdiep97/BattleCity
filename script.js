@@ -482,10 +482,12 @@ TankAI.prototype.setMove2=function(){
 	
 	while(open.length != 0){
 		var i = 0;
-		var p = new Point(open[0].x,open[0].y);
+		var p = open[0];
 		for(; i < open.length; i++){
-			if(f.get(p) > f.get(open[i]))
+			if(f.get(p) > f.get(open[i])){
 				p = open[i];
+				
+			}
 		}
 		if((p.x===e1.x && p.y===e1.y) || (p.x===e2.x && p.y===e2.y)){
 			close.push(p);
@@ -496,7 +498,7 @@ TankAI.prototype.setMove2=function(){
 		close.push(p);
 		var index = open.indexOf(p);
 		open.splice(index,1);
-
+		
 		var Q = new Array();
 		
 		i=0;
@@ -506,6 +508,8 @@ TankAI.prototype.setMove2=function(){
 				case 0:  //x-50; y;
 					if(p.x > 50 && map[p.y/50-1][(p.x-50)/50-1]===0 ){
 						q = new Point(p.x-50,p.y);
+						//console.log(q);
+						//console(q);
 						Q.push(q);
 					}
 					break;
@@ -536,7 +540,18 @@ TankAI.prototype.setMove2=function(){
 		
 		for(; i < Q.length; i++){
 			q = Q[i];
-			if(open.indexOf(q) === -1 && close.indexOf(q)=== -1) // th1
+			var j = 0;
+			var check_open=false;
+			var check_close=false;
+			for(; j < open.length; j++){
+				if(q.x===open[j].x && q.y === open[j].y)
+					check_open=true;
+			}
+			for(j=0; j < close.length; j++){
+				if(q.x===close[j].x && q.y === close[j].y)
+					check_close=true;
+			}
+			if(check_open===false && check_close===false) // th1
 			{
 				g.set(q,g.get(p)+1);//g[q] = g[p]+1;
                 f.set(q,g.get(q)+H(q.x,q.y));
@@ -544,7 +559,8 @@ TankAI.prototype.setMove2=function(){
                 open.push(q);
 			}
 			else
-				if(open.indexOf(q)!= -1)//q thuoc open
+			
+				if(check_open===true)//q thuoc open
 				{
 					 if(g[q] > g[p]+ 1)  //Nếu đến được q bằng path ngắn hơn thì cập nhật lại q trong Open
                         {
@@ -553,8 +569,9 @@ TankAI.prototype.setMove2=function(){
                             prev.set(q,p);
                         }
 				}
+			
 			else 
-				if(close.indexOf(q)!= -1) // q thuoc close
+				if(check_close===true) // q thuoc close
 				{
 					if( g[q] > g[p]+1) //Nếu đến được q bằng path ngắn ngơn 
                         {
@@ -572,17 +589,21 @@ TankAI.prototype.setMove2=function(){
 	if(flag === false)
 		return random(1,4);
 	else
-		{	var next;
+		{	
+			var next;
 			var dx, dy;
 			var vertex_index1 = e1;
 			var vertex_index2 = e2;
-			while(vertex_index1 != st && vertex_index2 !=st){
-				if(pre.has(vertex_index1)===true){
-					vertex_index1=pre.get(vertex_index1);
+			while((vertex_index1.x != st.x && vertex_index1.y != st.y) && (vertex_index2.x != st.x && vertex_index2.y != st.y)){
+				console.log(vertex_index1);
+				console.log(vertex_index2);
+				if(prev.has(vertex_index1)===true){
+					//console.log(prev);
+					vertex_index1=prev.get(vertex_index1);
 				}
 				else
-					if(pre.has(vertex_index2)===true){
-						vertex_index2=pre.get(vertex_index2);
+					if(prev.has(vertex_index2)===true){
+						vertex_index2=prev.get(vertex_index2);
 					}
 				if(vertex_index1===st){
 					next=1;
@@ -974,17 +995,18 @@ loop();
 
 
 
-
 /*
 function point(x,y){
   this.x=x;
   this.y = y;
 };
+var m = new Map();
 
-point.prototype.constructor=point;
 var b = new point(20,1);
 
 var a = new point(20,1);
-		
-console.log(a.equals(b));
+m.set(a,b);		
+if(m.has(a) === true){
+console.log(m.has(a));
+}
 */
