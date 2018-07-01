@@ -457,9 +457,174 @@ TankAI.prototype.setMove1=function(){
 
 
 };
+function Point(x,y){
+	this.x=x;
+	this.y=y;
+}
+function H(x,y){  //2 TARGET
+	var max1 = Math.max(Math.abs(x-Player.x),Math.abs(y-Player.y));
+	var max2 = Math.max(Math.abs(x-ego.x),Math.abs(y-ego.y));
+	return Math.max(max1,max2);
+}
+TankAI.prototype.setMove2=function(){ 
+	st= new Point(this.x, this.y);
+	e1 = new Point(Player.x, Player.y);
+	e2 = new Point(ego.x,ego.y);
+	var open 	= new Array();
+	var close 	= new Array();
+	var g 		= new Map();
+	var f 		= new Map();
+	var prev 	= new Map();
+	g.set(st,0);
+	f.set(st,0);
+	open.push(st);
+	var flag = false;
+	
+	while(open.length != 0){
+		var i = 0;
+		var p = new Point(open[0].x,open[0].y);
+		for(; i < open.length; i++){
+			if(f.get(p) > f.get(open[i]))
+				p = open[i];
+		}
+		if((p.x===e1.x && p.y===e1.y) || (p.x===e2.x && p.y===e2.y)){
+			close.push(p);
+			flag=true;
+			break;
+		}
 
-TankAI.prototype.setMove2=function(){
+		close.push(p);
+		var index = open.indexOf(p);
+		open.splice(index,1);
 
+		var Q = new Array();
+		
+		i=0;
+		var q;
+		for(;i<4;i++){
+			switch(i){
+				case 0:  //x-50; y;
+					if(p.x > 50 && map[p.y/50-1][(p.x-50)/50-1]===0 ){
+						q = new Point(p.x-50,p.y);
+						Q.push(q);
+					}
+					break;
+				case 1: //x+50, y
+					if(p.x < width && map[p.y/50-1][(p.x+50)/50-1]===0){ 
+						q = new Point(p.x+50,p.y);
+						Q.push(q);
+					}
+					break;
+				case 2:  //x,y-50 
+					if(p.y > 50 && map[(p.y-50)/50-1][p.x/50-1]===0){
+						q= new Point(p.x,p.y-50);
+						Q.push(q);
+					}
+					break;
+				case 3: //x,y+50
+					if(p.y < height && map[(p.y+50)/50-1][p.x/50-1]===0){
+						q = new Point(p.x,p.y+50);
+						Q.push(q);
+					}
+					break;
+				default:
+					break;
+			}	
+		}
+
+		i=0;
+		
+		for(; i < Q.length; i++){
+			q = Q[i];
+			if(open.indexOf(q) === -1 && close.indexOf(q)=== -1) // th1
+			{
+				g.set(q,g.get(p)+1);//g[q] = g[p]+1;
+                f.set(q,g.get(q)+H(q.x,q.y));
+                prev.set(q,p);
+                open.push(q);
+			}
+			else
+				if(open.indexOf(q)!= -1)//q thuoc open
+				{
+					 if(g[q] > g[p]+ 1)  //Nếu đến được q bằng path ngắn hơn thì cập nhật lại q trong Open
+                        {
+                            g.set(q,g.get(p)+1);//g[q] = g[p]+1;
+                            f.set(q,g.get(q)+H(q.x,q.y));//f[q] = g[q] + H(q.x,q.y);
+                            prev.set(q,p);
+                        }
+				}
+			else 
+				if(close.indexOf(q)!= -1) // q thuoc close
+				{
+					if( g[q] > g[p]+1) //Nếu đến được q bằng path ngắn ngơn 
+                        {
+                        //    Bỏ q khỏi Close;
+                        close.splice(close.indexOf(q),1);
+                     	g.set(q,g.get(p)+1);//g[q] = g[p]+1;
+                        f.set(q,g.get(q)+H(q.x,q.y));//f[q] = g[q] + H(q.x,q.y);
+                         prev.set(q,p);
+                        //Thêm q vào Open
+                        open.push(q);
+                        }
+				}
+		}
+	}
+	if(flag === false)
+		return random(1,4);
+	else
+		{	var next;
+			var dx, dy;
+			var vertex_index1 = e1;
+			var vertex_index2 = e2;
+			while(vertex_index1 != st && vertex_index2 !=st){
+				if(pre.has(vertex_index1)===true){
+					vertex_index1=pre.get(vertex_index1);
+				}
+				else
+					if(pre.has(vertex_index2)===true){
+						vertex_index2=pre.get(vertex_index2);
+					}
+				if(vertex_index1===st){
+					next=1;
+				}
+				else{
+					if(vertex_index2===st){
+						next=2;
+					}
+				}
+			}
+			if(next===1){
+				dx = vertex_index1.x - this.x;
+				dy = vertex_index1.y - this.y;
+			}
+			else
+			{
+				dx = vertex_index2.x - this.x;
+				dy = vertex_index2.y - this.y;
+			}
+			if(dx === 50){
+				this.lastmove= 3;
+				return;
+			}
+
+			else
+				if(dx===-50){
+					this.lastmove=4;
+					return;
+				}
+				else
+				{
+					if(dy === 50){
+						this.lastmove=1;
+						return;
+
+					}
+					if(dy === -50){
+						this.lastmove =2;
+						return;
+					}
+				}
+		}
 }
 TankAI.prototype.update=function(){ //MOVE;
 	if(this.lastmove === 0){}
@@ -716,7 +881,7 @@ var map=new Array;
 
 Player.setControl();
 	var x =200
-	while(tanks.length < 5){
+	while(tanks.length < 1){
 
 			var TankAI_ = new TankAI(x,50,1,0,2,true,1);
 			//x,y, lastmove,action ,type, exists
@@ -747,12 +912,12 @@ function loop(){
 		for(i;i< forest_Array.length;i++){ //draw forest
 			forest_Array[i].draw();
 		}
-		
+		map=Map_update();
 		i=0;
 		for(; i < block_Array.length;i++) // draw block
 			block_Array[i].draw();
 
-	
+		
 		if(Player.action === 1){
 			Player.action = 0;
 			
@@ -791,14 +956,14 @@ function loop(){
 		i=0;
 		while(i!=tanks.length){
 			//
-			tanks[i].setMove1();
+			tanks[i].setMove2();
 			tanks[i].collisionDetect();
 			tanks[i].update();
 			tanks[i].draw();
 			i+=1;
 		}
 		
-	map=Map_update();
+	
 	
 	},
 	1000 / fps);
@@ -807,5 +972,19 @@ function loop(){
 
 loop();
 
-	
 
+
+
+/*
+function point(x,y){
+  this.x=x;
+  this.y = y;
+};
+
+point.prototype.constructor=point;
+var b = new point(20,1);
+
+var a = new point(20,1);
+		
+console.log(a.equals(b));
+*/
