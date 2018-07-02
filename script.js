@@ -217,19 +217,19 @@ Bullet.prototype.collisionDetect=function(){
 		var i=0;
 
 		for(; i < block_Array.length; i++){
-			if(this.x === block_Array[i].x &&  this.y === block_Array[i].y){
+			if(this.x-35 > block_Array[i].x-50 && this.x-35 < block_Array[i].x && this.y-35 > block_Array[i].y -50 && this.y-35 < block_Array[i].y){
 				block_Array.splice(i,1);
 				
 			//	bullets.splice(this,1);
 				return true;
 			}
 		}
-		if(this.x ===  ego.x &&  this.y ===ego.y){
+		if(this.x-35 > ego.x-50 && this.x-35 <ego.x && this.y-35 > ego.y-50 && this.y -35 <ego.y){
 			ego.exists=false;
 			return true;
 		}
 		
-		if(this.x ===  Player.x &&  this.y ===Player.y){
+		if(this.x-35 > Player.x-50 && this.x-35 < Player.x && this.y-35 > Player.y-50 && this.y-35 < Player.y){
 				
 			Player.exists=false;
 			return true;
@@ -240,7 +240,7 @@ Bullet.prototype.collisionDetect=function(){
 		else //otherwise
 		{
 			for(i=0; i < tanks.length; i++){
-				if(this.x === tanks[i].x && this.y === tanks[i].y){
+				if(this.x-35 > tanks[i].x-50 && this.x-35 < tanks[i].x && this.y-35 > tanks[i].y -50 && this.y-35 < tanks[i].y){
 					if(this.type === 7) // if the bullet which hit ai tank is from player => tank destroy, else, the bullet is destroyed
 						tanks.splice(i,1);
 					return true;
@@ -590,25 +590,9 @@ TankAI.prototype.setMove1=function(){
 };
 
 TankAI.prototype.fire=function(){
-	if(this.current_direction===1){
-			var bullet = new Bullet(this.x, this.y+50, this.current_direction, 8, true);
+			var bullet = new Bullet(this.x, this.y, this.current_direction, 8, true);
 			bullets.push(bullet);
-	}
-	else
-			if(this.current_direction===2){
-					var bullet = new Bullet(this.x, this.y-50, this.current_direction, 8, true);
-					bullets.push(bullet);
-			}
-			else
-					if(this.current_direction===3){
-							var bullet = new Bullet(this.x+50, this.y, this.current_direction, 8, true);
-							bullets.push(bullet);
-					}
-					else
-						if(this.current_direction===1){
-							var bullet = new Bullet(this.x, this.y+50, this.current_direction, 8, true);
-							bullets.push(bullet);
-						}
+
 }		
 
 function Point(x,y){
