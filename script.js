@@ -267,6 +267,195 @@ TankAI.prototype.collisionDetect=function(){
 		}
 	}
 }
+TankAI.prototype.setMove3=function(){
+	var up=999, down=999, left=999, right=999; 
+	
+	if(this.x === width || this.lastmove ===4)
+		right =1000;  //can't go to the right
+	else
+		if(this.x === 50 || this.lastmove === 3)
+			left =1000; //can't go to the left
+	if(this.y ===height || this.lastmove === 2)
+		down = 1000; //cant go down
+	else
+		if(this.y === 50 || this.lastmove ===1)
+			up =1000;  // can't go up;
+	var i =0;
+	var j = 0 ;
+	if(right!=1000){   // x+50
+		for(;i < block_Array.length; i++){
+			if(this.x + 50 === block_Array[i].x && this.y === block_Array[i].y){
+				right=1000;
+				break;
+			}
+
+		}
+		if(i===block_Array.length){
+			j+=1;
+		
+			for(i=0; i < steel_Array.length; i++){
+				if(this.x + 50 === steel_Array[i].x && this.y === steel_Array[i].y){
+					right=1000;
+					break;
+
+				}
+
+			}
+			if(i===steel_Array.length){
+				j+=1
+				for(i=0; i < river_Array.length; i++){
+					if(this.x + 50 === river_Array[i].x && this.y === river_Array[i].y){
+						right=1000;
+						break;
+					}
+				}
+				if(i===river_Array.length) j+=1;
+
+			}
+		}
+		if(j === 3){
+			j=0;
+			right = (Math.abs(this.x + 50 - Player.x) + Math.abs(this.y - Player.y))/50;
+			
+		}
+	
+	}
+	i=0;
+	j=0;
+	if(left!=1000){
+	//	console.log("left");
+		for(; i < block_Array.length; i ++){
+			if(this.x - 50 === block_Array[i].x && this.y === block_Array[i].y){
+				left=1000;
+				break;
+			}
+
+		}
+		if(i===block_Array.length){
+			j+=1;
+		
+			for(i=0; i < steel_Array.length; i++){
+				if(this.x - 50 === steel_Array[i].x && this.y === steel_Array[i].y){
+					left=1000;
+					break;
+
+				}
+
+			}
+			if(i===steel_Array.length){
+				j+=1
+				for(i=0; i < river_Array.length; i++){
+					if(this.x - 50 === river_Array[i].x && this.y === river_Array[i].y){
+						left=1000;
+						break;
+					}
+				}
+				//console.log(i);
+				if(i===river_Array.length) j+=1;
+
+			}
+		}
+		if(j === 3){
+			j=0;
+		//	console.log(Math.abs(this.x - 50 - ego.x) + Math.abs(this.y - ego.y));
+			left = (Math.abs(this.x - 50 - Player.x) + Math.abs(this.y - Player.y))/50;
+			
+		}
+
+	}
+	if(up!=1000){
+		i=0;
+		j=0;
+		for(; i < block_Array.length; i ++){
+			if(this.x  === block_Array[i].x && this.y -50=== block_Array[i].y){
+				up=1000;
+				break;
+			}
+
+		}
+		if(i===block_Array.length){
+			j+=1;
+		
+			for(i=0; i < steel_Array.length; i++){
+				if(this.x  === steel_Array[i].x && this.y -50 === steel_Array[i].y){
+					up=1000;
+					break;
+
+				}
+
+			}
+			if(i===steel_Array.length){
+				j+=1
+				for(i=0; i < river_Array.length; i++){
+					if(this.x  === river_Array[i].x && this.y -50=== river_Array[i].y){
+						up=1000;
+						break;
+					}
+				}
+				if(i===river_Array.length) j+=1;
+
+			}
+		}
+		if(j === 3){
+			j=0;
+			up = (Math.abs(this.x  - Player.x) + Math.abs(this.y -50 - Player.y))/50;
+			
+		}
+	}
+	if(down!=1000){
+		i=0;
+		j=0;
+		for(; i < block_Array.length; i ++){
+			if(this.x  === block_Array[i].x && this.y +50=== block_Array[i].y){
+				down=1000;
+				break;
+			}
+
+		}
+		if(i===block_Array.length){
+			j+=1;
+		
+			for(i=0; i < steel_Array.length; i++){
+				if(this.x  === steel_Array[i].x && this.y +50 === steel_Array[i].y){
+					down=1000;
+					break;
+
+				}
+
+			}
+			if(i===steel_Array.length){
+				j+=1
+				for(i=0; i < river_Array.length; i++){
+					if(this.x  === river_Array[i].x && this.y +50=== river_Array[i].y){
+						down=1000;
+						break;
+					}
+				}
+				if(i===river_Array.length) j+=1;
+
+			}
+		}
+		if(j === 3){
+			j=0;
+			down = (Math.abs(this.x  - Player.x) + Math.abs(this.y +50 - Player.y))/50;
+			
+		}
+	}
+//	console.log("right",right);
+//	console.log("left",left);
+//	console.log("up",up);
+//	console.log("down",down);
+	var move = Min(up, down, left, right);
+	if(move === up)
+		this.lastmove= 2;
+	if(move === down)
+		this.lastmove= 1;
+	if(move === left)
+		this.lastmove= 4;
+	if(move === right)
+		this.lastmove= 3;
+
+};
 TankAI.prototype.setMove1=function(){
 	var up=999, down=999, left=999, right=999; 
 	
@@ -458,6 +647,15 @@ TankAI.prototype.setMove1=function(){
 
 
 };
+/*
+TankAI.prototype.fire=function(){
+	var dummy_x = this.x;
+	var dummy_y = this.y;
+	if(this.lastmove === 1 )
+		for(;;)
+	}	
+}
+*/
 function Point(x,y){
 	this.x=x;
 	this.y=y;
@@ -465,7 +663,7 @@ function Point(x,y){
 function H(x,y){  //2 TARGET
 	var max1 =Math.abs(x-Player.x)+Math.abs(y-Player.y);
 	var max2 = Math.abs(x-ego.x)+Math.abs(y-ego.y);
-	return Math.max(max1,max2);
+	return Math.min(max1,max2);
 }
 TankAI.prototype.setMove2=function(){ 
 	st= new Point(this.x, this.y);
@@ -914,14 +1112,16 @@ var forest = new Forest(400,200,1,true);
 forest_Array.push(forest);
 var river = new River(500,300,1,true);
 river_Array.push(river);
+var river = new River(550,300,1,true);
+river_Array.push(river);
 var bullets=[];
 var fps = 2;
 //var j = 0;
 var map=new Array;
-
+var result;
 Player.setControl();
 	var x =200
-	while(tanks.length < 1){
+	while(tanks.length < 5){
 
 			var TankAI_ = new TankAI(x,50,1,0,2,true,1);
 			//x,y, lastmove,action ,type, exists
@@ -931,7 +1131,9 @@ Player.setControl();
 
 		}
 function loop(){
-	if(ego.exists===false){
+	if(ego.exists===false || Player.exists === false){
+		result= false;
+		alert("thua");
 		return;
 	}
 		
@@ -996,7 +1198,7 @@ function loop(){
 		i=0;
 		while(i!=tanks.length){
 			//
-			tanks[i].setMove2();
+			tanks[i].setMove1();
 			tanks[i].collisionDetect();
 			tanks[i].update();
 			tanks[i].draw();
