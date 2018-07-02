@@ -335,7 +335,7 @@ TankAI.prototype.collisionDetect=function(){
 		}
 	}
 }
-TankAI.prototype.setMove3=function(){
+TankAI.prototype.setMove3=function(){ //di xe ng choi 
 	var up=999, down=999, left=999, right=999; 
 	
 	if(this.x === width || this.lastmove ===4)
@@ -348,166 +348,40 @@ TankAI.prototype.setMove3=function(){
 	else
 		if(this.y === 50 || this.lastmove ===1)
 			up =1000;  // can't go up;
-	var i =0;
-	var j = 0 ;
+	
 	if(right!=1000){   // x+50
-		for(;i < block_Array.length; i++){
-			if(this.x + 50 === block_Array[i].x && this.y === block_Array[i].y){
-				right=1000;
-				break;
-			}
-
-		}
-		if(i===block_Array.length){
-			j+=1;
-		
-			for(i=0; i < steel_Array.length; i++){
-				if(this.x + 50 === steel_Array[i].x && this.y === steel_Array[i].y){
-					right=1000;
-					break;
-
-				}
-
-			}
-			if(i===steel_Array.length){
-				j+=1
-				for(i=0; i < river_Array.length; i++){
-					if(this.x + 50 === river_Array[i].x && this.y === river_Array[i].y){
-						right=1000;
-						break;
-					}
-				}
-				if(i===river_Array.length) j+=1;
-
-			}
-		}
-		if(j === 3){
-			j=0;
+		if(checkWater(this.x+50,this.y)=== false && checkSteel(this.x+50,this.y)===false)
 			right = (Math.abs(this.x + 50 - Player.x) + Math.abs(this.y - Player.y))/50;
-			
-		}
+		else
+			right = 1000;
+		
 	
 	}
-	i=0;
-	j=0;
+	
 	if(left!=1000){
 	//	console.log("left");
-		for(; i < block_Array.length; i ++){
-			if(this.x - 50 === block_Array[i].x && this.y === block_Array[i].y){
-				left=1000;
-				break;
-			}
-
-		}
-		if(i===block_Array.length){
-			j+=1;
-		
-			for(i=0; i < steel_Array.length; i++){
-				if(this.x - 50 === steel_Array[i].x && this.y === steel_Array[i].y){
-					left=1000;
-					break;
-
-				}
-
-			}
-			if(i===steel_Array.length){
-				j+=1
-				for(i=0; i < river_Array.length; i++){
-					if(this.x - 50 === river_Array[i].x && this.y === river_Array[i].y){
-						left=1000;
-						break;
-					}
-				}
-				//console.log(i);
-				if(i===river_Array.length) j+=1;
-
-			}
-		}
-		if(j === 3){
-			j=0;
-		//	console.log(Math.abs(this.x - 50 - ego.x) + Math.abs(this.y - ego.y));
-			left = (Math.abs(this.x - 50 - Player.x) + Math.abs(this.y - Player.y))/50;
+			if(checkWater(this.x-50,this.y)=== false && checkSteel(this.x-50,this.y)===false)
+		//	console.log(Math.abs(this.x - 50 - Player.x) + Math.abs(this.y - Player.y));
+				left = (Math.abs(this.x - 50 - Player.x) + Math.abs(this.y - Player.y))/50;
+			else
+				left = 1000;
 			
-		}
+		
 
 	}
 	if(up!=1000){
-		i=0;
-		j=0;
-		for(; i < block_Array.length; i ++){
-			if(this.x  === block_Array[i].x && this.y -50=== block_Array[i].y){
-				up=1000;
-				break;
-			}
-
-		}
-		if(i===block_Array.length){
-			j+=1;
-		
-			for(i=0; i < steel_Array.length; i++){
-				if(this.x  === steel_Array[i].x && this.y -50 === steel_Array[i].y){
-					up=1000;
-					break;
-
-				}
-
-			}
-			if(i===steel_Array.length){
-				j+=1
-				for(i=0; i < river_Array.length; i++){
-					if(this.x  === river_Array[i].x && this.y -50=== river_Array[i].y){
-						up=1000;
-						break;
-					}
-				}
-				if(i===river_Array.length) j+=1;
-
-			}
-		}
-		if(j === 3){
-			j=0;
+		if(checkWater(this.x,this.y-50)=== false && checkSteel(this.x,this.y-50)===false)
 			up = (Math.abs(this.x  - Player.x) + Math.abs(this.y -50 - Player.y))/50;
-			
-		}
+		else
+			up = 1000;
+		
 	}
 	if(down!=1000){
-		i=0;
-		j=0;
-		for(; i < block_Array.length; i ++){
-			if(this.x  === block_Array[i].x && this.y +50=== block_Array[i].y){
-				down=1000;
-				break;
-			}
-
-		}
-		if(i===block_Array.length){
-			j+=1;
-		
-			for(i=0; i < steel_Array.length; i++){
-				if(this.x  === steel_Array[i].x && this.y +50 === steel_Array[i].y){
-					down=1000;
-					break;
-
-				}
-
-			}
-			if(i===steel_Array.length){
-				j+=1
-				for(i=0; i < river_Array.length; i++){
-					if(this.x  === river_Array[i].x && this.y +50=== river_Array[i].y){
-						down=1000;
-						break;
-					}
-				}
-				if(i===river_Array.length) j+=1;
-
-			}
-		}
-		if(j === 3){
-			j=0;
+	if(checkWater(this.x,this.y+50)=== false && checkSteel(this.x,this.y+50)===false)
 			down = (Math.abs(this.x  - Player.x) + Math.abs(this.y +50 - Player.y))/50;
 			
-		}
+	else
+		down = 1000;
 	}
 //	console.log("right",right);
 //	console.log("left",left);
@@ -523,8 +397,11 @@ TankAI.prototype.setMove3=function(){
 	if(move === right)
 		this.lastmove= 3;
 
+
+
+
 };
-TankAI.prototype.setMove1=function(){
+TankAI.prototype.setMove1=function(){ // di den dai bang 
 	var up=999, down=999, left=999, right=999; 
 	
 	if(this.x === width || this.lastmove ===4)
@@ -606,9 +483,9 @@ function H(x,y){  //2 TARGET
 		return Math.min(max1,max2);
 }
 TankAI.prototype.setMove2=function(){ 
-	st= new Point(this.x, this.y);
-	e1 = new Point(Player.x, Player.y);
-	e2 = new Point(ego.x,ego.y);
+	st= new Point(this.x, this.y); //start point
+	e1 = new Point(Player.x, Player.y); //end point 1
+	e2 = new Point(ego.x,ego.y);	//end point 2
 	var open 	= new Array();
 	var close 	= new Array();
 	var g 		= new Map();
@@ -1126,9 +1003,17 @@ river = new River(400,250,1,true);
 river_Array.push(river);
 river = new River(350,300,1,true);
 river_Array.push(river);
+river = new River(300,300,1,true);
+river_Array.push(river);
+river = new River(150,300,1,true);
+river_Array.push(river);
+river = new River(200,300,1,true);
+river_Array.push(river);
+river = new River(250,300,1,true);
+river_Array.push(river);
 var bullets=[];
-var fps = 2;
-var j = 0;
+var fps = 3;
+var j = 0; // luot choi
 function TANKAI_SET(j){
 	if(j === 0 || j ===1){
 		var x =200;
