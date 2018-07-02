@@ -1,3 +1,4 @@
+
 var canvas = document.querySelector('canvas');
 var ctx = canvas.getContext('2d') ; //draw 2d;
 var width = canvas.width ;
@@ -600,9 +601,9 @@ function Point(x,y){
 	this.y=y;
 }
 function H(x,y){  //2 TARGET
-	var max1 =Math.abs(x-Player.x)+Math.abs(y-Player.y);
-	var max2 = Math.abs(x-ego.x)+Math.abs(y-ego.y);
-	return Math.min(max1,max2);
+		var max1 =Math.abs(x-Player.x)+Math.abs(y-Player.y);
+		var max2 = Math.abs(x-ego.x)+Math.abs(y-ego.y);
+		return Math.min(max1,max2);
 }
 TankAI.prototype.setMove2=function(){ 
 	st= new Point(this.x, this.y);
@@ -820,7 +821,7 @@ TankAI.prototype.update=function(){ //MOVE;
 	}
 	else
 	if(this.lastmove === 2){
-		if(chechBlock(this.x,this.y-50)===true)
+		if(checkBlock(this.x,this.y-50)===true)
 		{
 			this.current_direction=2;
 			this.fire();
@@ -1081,8 +1082,9 @@ block_Array.push(block);
 block= new Block(350,350,3,true);
 block_Array.push(block);
 
-block= new Block(400,350,3,true);
-block_Array.push(block);
+
+
+
 
 var steel_Array=[];
 var steel = new Steel(400,100,1,true);
@@ -1097,11 +1099,32 @@ steel_Array.push(steel);
 steel= new Steel(500,350,1,true);
 steel_Array.push(steel);
 
+steel= new Steel(600,300,1,true)
+steel_Array.push(steel);
+steel= new Steel(650,300,1,true)
+steel_Array.push(steel);
+steel= new Steel(700,300,1,true)
+steel_Array.push(steel);
 var forest = new Forest(400,200,1,true);
+forest_Array.push(forest);
+
+forest = new Forest(450,200,1,true)
+forest_Array.push(forest);
+
+forest = new Forest(500,200,1,true)
+forest_Array.push(forest);
+
+forest = new Forest(550,200,1,true)
 forest_Array.push(forest);
 var river = new River(500,300,1,true);
 river_Array.push(river);
-var river = new River(550,300,1,true);
+river = new River(550,300,1,true);
+river_Array.push(river);
+river = new River(400,300,1,true);
+river_Array.push(river);
+river = new River(400,250,1,true);
+river_Array.push(river);
+river = new River(350,300,1,true);
 river_Array.push(river);
 var bullets=[];
 var fps = 2;
@@ -1158,10 +1181,7 @@ function loop(){
 		Player.update();
 		Player.draw();
 		ego.draw();
-		i =0 ;
-		for(i;i< forest_Array.length;i++){ //draw forest
-			forest_Array[i].draw();
-		}
+		
 		map=Map_update();
 		
 		console.log(j);
@@ -1192,6 +1212,7 @@ function loop(){
 		}
 		while(i!=tanks.length){
 			//
+			console.log(j);
 			
 			if(j === 0)
 				tanks[i].setMove1();
@@ -1233,6 +1254,10 @@ function loop(){
 		 i=0;
 		for(; i < block_Array.length;i++) // draw block
 			block_Array[i].draw();
+		i =0 ;
+		for(i;i< forest_Array.length;i++){ //draw forest
+			forest_Array[i].draw();
+		}
 
 	
 	
