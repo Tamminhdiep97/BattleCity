@@ -1,4 +1,3 @@
-
 var canvas = document.querySelector('canvas');
 var ctx = canvas.getContext('2d') ; //draw 2d;
 var width = canvas.width ;
@@ -45,7 +44,76 @@ function checkBlock(x,y){
 	}
 	return false;
 }
-
+function checkFacingEgo(x,y,direction){
+	if(direction === 1){
+		//console();
+		var y_d = y;
+		for(;y_d <= height; y_d+=50){
+			if(y_d === ego.y && x === ego.x)
+				return true;	
+		}
+		return false;
+	}
+	if(direction === 2){
+		var y_d = y;
+		for(;y_d > 0; y_d-=50){
+			if(y_d === ego.y && x === ego.x)
+				return true;	
+		}
+		return false;
+	}
+	if(direction === 3){
+		var x_d =x ;
+		for(;x_d <= width; x_d +=50){
+			if(x_d === ego.x && y === ego.y)
+				return true;
+		}
+		return false;
+	}
+	if(direction===4){
+		var x_d = x;
+		for(;x_d > 0; x_d-=50){
+			if(x_d === ego.x && y === ego.y)
+				return true;
+		}
+		return false;
+	}
+}
+function checkFacingPlayer(x,y,direction){
+	if(direction === 1){
+		//console();
+		var y_d = y;
+		for(;y_d <= height; y_d+=50){
+			if(y_d === Player.y && x === Player.x)
+				return true;	
+		}
+		return false;
+	}
+	if(direction === 2){
+		var y_d = y;
+		for(;y_d > 0; y_d-=50){
+			if(y_d === Player.y && x === Player.x)
+				return true;	
+		}
+		return false;
+	}
+	if(direction === 3){
+		var x_d =x ;
+		for(;x_d <= width; x_d +=50){
+			if(x_d === Player.x && y === Player.y)
+				return true;
+		}
+		return false;
+	}
+	if(direction===4){
+		var x_d = x;
+		for(;x_d > 0; x_d-=50){
+			if(x_d === Player.x && y === Player.y)
+				return true;
+		}
+		return false;
+	}
+}
 function Map_update(){
 	var A=new Array();
 	var check=false;
@@ -55,7 +123,7 @@ function Map_update(){
 		
 		for(x=50;x<=width;x+=50){
 				
-			if(checkBlock(x,y)||checkWater(x,y)||checkSteel(x,y)){
+			if(checkWater(x,y)||checkSteel(x,y)){
 				A[(y/50)-1].push(1);
 				
 			}
@@ -74,7 +142,6 @@ function Map_update(){
 			}
 			else
 				if(bullets[i].lastmove === 2){
-					console.log("set");
 					for(y=bullets[i].y; y >= 50;y-=50)
 					A[y/50-1][bullets[i].x/50-1]=1;
 				}
@@ -85,7 +152,7 @@ function Map_update(){
 						}
 							else
 							{
-								for(x=bullets[i].x; x <= width;x-=50)
+								for(x=bullets[i].x; x >=50;x-=50)
 								A[bullets[i].y/50-1][x/50-1]=1;
 							}
 				}
@@ -150,19 +217,19 @@ Bullet.prototype.collisionDetect=function(){
 		var i=0;
 
 		for(; i < block_Array.length; i++){
-			if(this.x-35 > block_Array[i].x-50 && this.x-35 < block_Array[i].x && this.y-35 > block_Array[i].y -50 && this.y-35 < block_Array[i].y){
+			if(this.x === block_Array[i].x &&  this.y === block_Array[i].y){
 				block_Array.splice(i,1);
 				
 			//	bullets.splice(this,1);
 				return true;
 			}
 		}
-		if(this.x-35 > ego.x-50 && this.x-35 <ego.x && this.y-35 > ego.y-50 && this.y -35 <ego.y){
+		if(this.x ===  ego.x &&  this.y ===ego.y){
 			ego.exists=false;
 			return true;
 		}
 		
-		if(this.x-35 > Player.x-50 && this.x-35 < Player.x && this.y-35 > Player.y-50 && this.y-35 < Player.y){
+		if(this.x ===  Player.x &&  this.y ===Player.y){
 				
 			Player.exists=false;
 			return true;
@@ -173,7 +240,7 @@ Bullet.prototype.collisionDetect=function(){
 		else //otherwise
 		{
 			for(i=0; i < tanks.length; i++){
-				if(this.x-35 > tanks[i].x-50 && this.x-35 < tanks[i].x && this.y-35 > tanks[i].y -50 && this.y-35 < tanks[i].y){
+				if(this.x === tanks[i].x && this.y === tanks[i].y){
 					if(this.type === 7) // if the bullet which hit ai tank is from player => tank destroy, else, the bullet is destroyed
 						tanks.splice(i,1);
 					return true;
@@ -469,166 +536,40 @@ TankAI.prototype.setMove1=function(){
 	else
 		if(this.y === 50 || this.lastmove ===1)
 			up =1000;  // can't go up;
-	var i =0;
-	var j = 0 ;
+	
 	if(right!=1000){   // x+50
-		for(;i < block_Array.length; i++){
-			if(this.x + 50 === block_Array[i].x && this.y === block_Array[i].y){
-				right=1000;
-				break;
-			}
-
-		}
-		if(i===block_Array.length){
-			j+=1;
-		
-			for(i=0; i < steel_Array.length; i++){
-				if(this.x + 50 === steel_Array[i].x && this.y === steel_Array[i].y){
-					right=1000;
-					break;
-
-				}
-
-			}
-			if(i===steel_Array.length){
-				j+=1
-				for(i=0; i < river_Array.length; i++){
-					if(this.x + 50 === river_Array[i].x && this.y === river_Array[i].y){
-						right=1000;
-						break;
-					}
-				}
-				if(i===river_Array.length) j+=1;
-
-			}
-		}
-		if(j === 3){
-			j=0;
+		if(checkWater(this.x+50,this.y)=== false && checkSteel(this.x+50,this.y)===false)
 			right = (Math.abs(this.x + 50 - ego.x) + Math.abs(this.y - ego.y))/50;
-			
-		}
+		else
+			right = 1000;
+		
 	
 	}
-	i=0;
-	j=0;
+	
 	if(left!=1000){
 	//	console.log("left");
-		for(; i < block_Array.length; i ++){
-			if(this.x - 50 === block_Array[i].x && this.y === block_Array[i].y){
-				left=1000;
-				break;
-			}
-
-		}
-		if(i===block_Array.length){
-			j+=1;
-		
-			for(i=0; i < steel_Array.length; i++){
-				if(this.x - 50 === steel_Array[i].x && this.y === steel_Array[i].y){
-					left=1000;
-					break;
-
-				}
-
-			}
-			if(i===steel_Array.length){
-				j+=1
-				for(i=0; i < river_Array.length; i++){
-					if(this.x - 50 === river_Array[i].x && this.y === river_Array[i].y){
-						left=1000;
-						break;
-					}
-				}
-				//console.log(i);
-				if(i===river_Array.length) j+=1;
-
-			}
-		}
-		if(j === 3){
-			j=0;
+			if(checkWater(this.x-50,this.y)=== false && checkSteel(this.x-50,this.y)===false)
 		//	console.log(Math.abs(this.x - 50 - ego.x) + Math.abs(this.y - ego.y));
-			left = (Math.abs(this.x - 50 - ego.x) + Math.abs(this.y - ego.y))/50;
+				left = (Math.abs(this.x - 50 - ego.x) + Math.abs(this.y - ego.y))/50;
+			else
+				left = 1000;
 			
-		}
+		
 
 	}
 	if(up!=1000){
-		i=0;
-		j=0;
-		for(; i < block_Array.length; i ++){
-			if(this.x  === block_Array[i].x && this.y -50=== block_Array[i].y){
-				up=1000;
-				break;
-			}
-
-		}
-		if(i===block_Array.length){
-			j+=1;
-		
-			for(i=0; i < steel_Array.length; i++){
-				if(this.x  === steel_Array[i].x && this.y -50 === steel_Array[i].y){
-					up=1000;
-					break;
-
-				}
-
-			}
-			if(i===steel_Array.length){
-				j+=1
-				for(i=0; i < river_Array.length; i++){
-					if(this.x  === river_Array[i].x && this.y -50=== river_Array[i].y){
-						up=1000;
-						break;
-					}
-				}
-				if(i===river_Array.length) j+=1;
-
-			}
-		}
-		if(j === 3){
-			j=0;
+		if(checkWater(this.x,this.y-50)=== false && checkSteel(this.x,this.y-50)===false)
 			up = (Math.abs(this.x  - ego.x) + Math.abs(this.y -50 - ego.y))/50;
-			
-		}
+		else
+			up = 1000;
+		
 	}
 	if(down!=1000){
-		i=0;
-		j=0;
-		for(; i < block_Array.length; i ++){
-			if(this.x  === block_Array[i].x && this.y +50=== block_Array[i].y){
-				down=1000;
-				break;
-			}
-
-		}
-		if(i===block_Array.length){
-			j+=1;
-		
-			for(i=0; i < steel_Array.length; i++){
-				if(this.x  === steel_Array[i].x && this.y +50 === steel_Array[i].y){
-					down=1000;
-					break;
-
-				}
-
-			}
-			if(i===steel_Array.length){
-				j+=1
-				for(i=0; i < river_Array.length; i++){
-					if(this.x  === river_Array[i].x && this.y +50=== river_Array[i].y){
-						down=1000;
-						break;
-					}
-				}
-				if(i===river_Array.length) j+=1;
-
-			}
-		}
-		if(j === 3){
-			j=0;
+	if(checkWater(this.x,this.y+50)=== false && checkSteel(this.x,this.y+50)===false)
 			down = (Math.abs(this.x  - ego.x) + Math.abs(this.y +50 - ego.y))/50;
 			
-		}
+	else
+		down = 1000;
 	}
 //	console.log("right",right);
 //	console.log("left",left);
@@ -647,15 +588,29 @@ TankAI.prototype.setMove1=function(){
 
 
 };
-/*
+
 TankAI.prototype.fire=function(){
-	var dummy_x = this.x;
-	var dummy_y = this.y;
-	if(this.lastmove === 1 )
-		for(;;)
-	}	
-}
-*/
+	if(this.current_direction===1){
+			var bullet = new Bullet(this.x, this.y+50, this.current_direction, 8, true);
+			bullets.push(bullet);
+	}
+	else
+			if(this.current_direction===2){
+					var bullet = new Bullet(this.x, this.y-50, this.current_direction, 8, true);
+					bullets.push(bullet);
+			}
+			else
+					if(this.current_direction===3){
+							var bullet = new Bullet(this.x+50, this.y, this.current_direction, 8, true);
+							bullets.push(bullet);
+					}
+					else
+						if(this.current_direction===1){
+							var bullet = new Bullet(this.x, this.y+50, this.current_direction, 8, true);
+							bullets.push(bullet);
+						}
+}		
+
 function Point(x,y){
 	this.x=x;
 	this.y=y;
@@ -868,27 +823,57 @@ TankAI.prototype.update=function(){ //MOVE;
 	if(this.lastmove === 0){}
 		else
 	if(this.lastmove === 1){
+		if(checkBlock(this.x,this.y+50)===true){
+			this.current_direction=1;
+			this.fire();
+			return;
+		}
+		else{
 		this.y+=50;
 		this.current_direction=1;
 	//	console.log("this.y+50");
+		}
 	}
 	else
 	if(this.lastmove === 2){
+		if(chechBlock(this.x,this.y-50)===true)
+		{
+			this.current_direction=2;
+			this.fire();
+			return;
+		}
+		else{
 		this.y-=50;
 		this.current_direction=2;
 	//	console.log("this.y-50");
+		}
 	}
 	else
 	if(this.lastmove === 3){
+		if(checkBlock(this.x+50,this.y)===true){
+			this.current_direction=3;
+			this.fire();
+			return;
+		}
+		else{
 		this.x+=50;
 		this.current_direction=3;
 	//	console.log("this.x+50");
+		}
 	}
 	else
 	if(this.lastmove === 4){
+		if(checkBlock(this.x-50,this.y)===true){
+			this.current_direction=4;
+			this.fire();
+			return;
+
+		}
+		else{
 		this.x-=50;
 		this.current_direction=4;
 	//	console.log("this.x-50");
+		}
 	}
 };
 
@@ -1088,26 +1073,46 @@ var forest_Array= [];
 var block_Array=[];
 var block = new Block(50,50,3, true);
 block_Array.push(block);
+block= new Block(width/2-50,height,3,true);
+block_Array.push(block);
+block= new Block(width/2+50,height,3,true);
+block_Array.push(block);
+block= new Block(width/2+50,height-50,3,true);
+block_Array.push(block);
+block= new Block(width/2-50,height-50,3,true);
+block_Array.push(block);
+
+block= new Block(width/2,height-50,3,true);
+block_Array.push(block);
+
 block= new Block(300,350,3,true);
 block_Array.push(block);
-block= new Block(500,350,3,true);
-block_Array.push(block);
+
 block= new Block(550,350,3,true);
 block_Array.push(block);
+
 block= new Block(450,350,3,true);
 block_Array.push(block);
+
 block= new Block(350,350,3,true);
 block_Array.push(block);
+
 block= new Block(400,350,3,true);
 block_Array.push(block);
+
 var steel_Array=[];
 var steel = new Steel(400,100,1,true);
 steel_Array.push(steel);
+
 steel = new Steel(450, 300,1, true);
 steel_Array.push(steel);
-steel = new Steel(450,150,1,true);
 
+steel = new Steel(450,150,1,true);
 steel_Array.push(steel);
+
+steel= new Steel(500,350,1,true);
+steel_Array.push(steel);
+
 var forest = new Forest(400,200,1,true);
 forest_Array.push(forest);
 var river = new River(500,300,1,true);
@@ -1116,12 +1121,23 @@ var river = new River(550,300,1,true);
 river_Array.push(river);
 var bullets=[];
 var fps = 2;
-//var j = 0;
-var map=new Array;
-var result;
-Player.setControl();
-	var x =200
-	while(tanks.length < 5){
+var j = 0;
+function TANKAI_SET(j){
+	if(j === 0 || j ===1){
+		var x =200;
+		while(tanks.length < 3){
+			console.log("pushTank");
+			var TankAI_ = new TankAI(x,50,1,0,2,true,1);
+			//x,y, lastmove,action ,type, exists
+			x+=150;
+				//init Tank 3 loai 2 ngu 1 vua 1 thong minh
+			tanks.push(TankAI_);
+
+		}
+	}
+		if(j === 2 ){
+		var x =200
+		while(tanks.length < 1){
 
 			var TankAI_ = new TankAI(x,50,1,0,2,true,1);
 			//x,y, lastmove,action ,type, exists
@@ -1130,13 +1146,21 @@ Player.setControl();
 			tanks.push(TankAI_);
 
 		}
+	
+	}
+}
+var j = -1;
+var map=new Array;
+var result;
+Player.setControl();
+	
 function loop(){
 	if(ego.exists===false || Player.exists === false){
 		result= false;
 		alert("thua");
 		return;
 	}
-		
+	
 	setTimeout(function(){
 		requestAnimationFrame(loop);
 		
@@ -1155,11 +1179,8 @@ function loop(){
 			forest_Array[i].draw();
 		}
 		map=Map_update();
-		i=0;
-		for(; i < block_Array.length;i++) // draw block
-			block_Array[i].draw();
-
 		
+		console.log(j);
 		if(Player.action === 1){
 			Player.action = 0;
 			
@@ -1169,15 +1190,51 @@ function loop(){
 		}
 		Player.lastmove=0;
 		i = 0;
+		
+		
+		
+		for(; i < steel_Array.length; i++){ //draw steel
+			steel_Array[i].draw();
+			steel_Array[i].collisionDetect();
+		}
+		i=0;
+		if(tanks.length===0){
+			j+=1;
+			if(j === 3){
+				alert("you win!");
+			}
+			else
+				TANKAI_SET(j);
+		}
+		while(i!=tanks.length){
+			//
+			
+			if(j === 0)
+				tanks[i].setMove1();
+			if(j === 1)
+				tanks[i].setMove3();
+			if(j === 2)
+				tanks[i].setMove2();
+			tanks[i].collisionDetect();
+			tanks[i].update();
+			if(checkFacingEgo(tanks[i].x,tanks[i].y,tanks[i].current_direction)|| checkFacingPlayer(tanks[i].x,tanks[i].y,tanks[i].current_direction))
+				tanks[i].fire();
+			tanks[i].draw();
+
+			
+			i+=1;
+		}
+		
+			i = 0;
 		while(i != bullets.length){
 
 		 	bullets[i].draw();
 		 	
 		 	bullets[i].update();
 
-		 	var j = bullets[i].collisionDetect();
+		 	var l = bullets[i].collisionDetect();
 
-		 	if(j===true){
+		 	if(l===true){
 		 		bullets.splice(i,1);
 		 		i-=1;
 		 	}
@@ -1189,22 +1246,10 @@ function loop(){
 
 		 	i+=1;
 		 }
-		i=0;
-			i = 0;
-		for(; i < steel_Array.length; i++){ //draw steel
-			steel_Array[i].draw();
-			steel_Array[i].collisionDetect();
-		}
-		i=0;
-		while(i!=tanks.length){
-			//
-			tanks[i].setMove1();
-			tanks[i].collisionDetect();
-			tanks[i].update();
-			tanks[i].draw();
-			i+=1;
-		}
-		
+		 i=0;
+		for(; i < block_Array.length;i++) // draw block
+			block_Array[i].draw();
+
 	
 	
 	},
@@ -1215,20 +1260,16 @@ function loop(){
 loop();
 
 /*
-
-
 function point(x,y){
   this.x=x;
   this.y = y;
 };
 var m = new Map();
-
 var c = new point(10,1);
 var b = new point (20,1)
 var a = new point(20,1);
 m.set(a,c);		
 if(m.has(a) === true){
 console.log(m.has(b));
-
 }
 */
