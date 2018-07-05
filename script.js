@@ -1,4 +1,3 @@
-
 var canvas = document.querySelector('canvas');
 var ctx = canvas.getContext('2d') ; //draw 2d;
 var width = canvas.width ;
@@ -324,13 +323,13 @@ TankAI.prototype.collisionDetect=function(){
 	for(; i < tanks.length; i++){
 		if(!(this === tanks[i])){
 		//	console.log("check");
-			if((this.lastmove === 1) && (tanks[i].x === this.x) && (tanks[i].y===this.y+50))
+			if((this.lastmove === 1) && ((tanks[i].x === this.x && tanks[i].y===this.y+50) || (Player.x === this.x && Player.y===this.y+50)))
 				this.lastmove =0 ;
-			if((this.lastmove === 2) && (tanks[i].x === this.x) && (tanks[i].y===this.y-50))
+			if((this.lastmove === 2) && ((tanks[i].x === this.x && tanks[i].y===this.y-50)||(Player.x === this.x && Player.y===this.y-50)))
 				this.lastmove =0 ;
-			if((this.lastmove === 3) && (tanks[i].x === this.x+50) && (tanks[i].y===this.y))
+			if((this.lastmove === 3) && ((tanks[i].x === this.x+50 && tanks[i].y===this.y)||(Player.x === this.x+50 && Player.y)))
 				this.lastmove =0 ;
-			if((this.lastmove === 4) && (tanks[i].x === this.x-50) && (tanks[i].y===this.y))
+			if((this.lastmove === 4) && ((tanks[i].x === this.x-50 && tanks[i].y===this.y)||(Player.x === this.x-50 && Player.y===this.y)))
 				this.lastmove =0 ;
 		}
 	}
@@ -623,8 +622,8 @@ TankAI.prototype.setMove2=function(){
 			var v1,v2;
 			
 			while(!(vertex_index1.x === st.x && vertex_index1.y === st.y) && !(vertex_index2.x === st.x && vertex_index2.y === st.y)){
-				console.log(vertex_index1);
-				console.log(vertex_index2);
+				//console.log(vertex_index1);
+				//console.log(vertex_index2);
 				if(prev.has(vertex_index1)===true){
 					//console.log(prev);
 					v1 = prev.get(vertex_index1);
@@ -808,6 +807,10 @@ TankPlayer.prototype.setControl=function(){
 		else if( e.keyCode === 32 || e.keyCode === 74){
 			_this.action=1;
 		}
+		else if(e.keyCode === 49 || e.keyCode === 50 || e.keyCode === 51 ){
+			j =e.keyCode-50;
+			tanks.splice(0,tanks.length);
+		}
 		
 	}
 
@@ -928,7 +931,7 @@ TankPlayer.prototype.update=function(){
 
 var Player =  new TankPlayer(width/2-100,height,0, 0, 1, true, 2);//lastmove,action, type, exists,current_direction)
 var tankAi;
-var ego = new Ego(width/2,height,7,true);
+var ego = new Ego(width/2,height,6,true);
 var tanks=[];
 var river_Array= [];
 var forest_Array= [];
@@ -1012,16 +1015,22 @@ river_Array.push(river);
 river = new River(250,300,1,true);
 river_Array.push(river);
 var bullets=[];
-var fps = 3;
-var j = 0; // luot choi
+var fps = 2;
+var j = -1; // luot choi
 function TANKAI_SET(j){
 	if(j === 0 || j ===1){
-		var x =200;
+		var x =150;
 		while(tanks.length < 3){
-			console.log("pushTank");
+			if(tanks.length === 0)
 			var TankAI_ = new TankAI(x,50,1,0,2,true,1);
+			else if(tanks.length ===1){
+				var TankAI_= new TankAI(100,300,1,0,2,true,1);
+			}
+			else if(tanks.length === 2){
+				var TankAI_= new TankAI(100,250,1,0,4,true,1);
+			}
 			//x,y, lastmove,action ,type, exists
-			x+=150;
+			x+=200;
 				//init Tank 3 loai 2 ngu 1 vua 1 thong minh
 			tanks.push(TankAI_);
 
@@ -1041,7 +1050,7 @@ function TANKAI_SET(j){
 	
 	}
 }
-var j = -1;
+var j = 1;
 var map=new Array;
 var result;
 Player.setControl();
