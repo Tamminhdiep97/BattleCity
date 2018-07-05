@@ -320,16 +320,35 @@ function TankAI(x,y, lastmove,action ,type, exists,current_direction){ // class 
 TankAI.prototype.constructor = TankAI;
 TankAI.prototype.collisionDetect=function(){
 	var i =0;
+	if((this.lastmove === 1) && ((Player.x === this.x && Player.y===this.y+50)|| (ego.x === this.x && ego.y===this.y+50))){
+		this.lastmove = 0;
+		return;
+	}
+	if((this.lastmove === 2) && ((Player.x === this.x && Player.y===this.y-50)|| (ego.x === this.x && ego.y===this.y-50))){
+		this.lastmove = 0;
+		return;
+	}
+	if((this.lastmove === 3) && ((Player.x === this.x+50 && Player.y === this.y)||(ego.x === this.x+50 && ego.y === this.y))){
+		this.lastmove = 0
+		return;
+	}
+	if((this.lastmove === 4) && ((Player.x === this.x-50 && Player.y === this.y)||(ego.x === this.x-50 && ego.y === this.y))){
+		this.lastmove = 0
+		return;
+	}
+	
 	for(; i < tanks.length; i++){
 		if(!(this === tanks[i])){
 		//	console.log("check");
-			if((this.lastmove === 1) && ((tanks[i].x === this.x && tanks[i].y===this.y+50) || (Player.x === this.x && Player.y===this.y+50)))
+			if((this.lastmove === 1) && (tanks[i].x === this.x && tanks[i].y===this.y+50) ){
+
 				this.lastmove =0 ;
-			if((this.lastmove === 2) && ((tanks[i].x === this.x && tanks[i].y===this.y-50)||(Player.x === this.x && Player.y===this.y-50)))
+			}
+			if((this.lastmove === 2) && ((tanks[i].x === this.x && tanks[i].y===this.y-50)||(Player.x === this.x && Player.y===this.y-50)||(ego.x === this.x && ego.y===this.y-50)))
 				this.lastmove =0 ;
-			if((this.lastmove === 3) && ((tanks[i].x === this.x+50 && tanks[i].y===this.y)||(Player.x === this.x+50 && Player.y)))
+			if((this.lastmove === 3) && ((tanks[i].x === this.x+50 && tanks[i].y===this.y)||(Player.x === this.x+50 && Player.y === this.y)||(ego.x === this.x+50 && ego.y === this.y)))
 				this.lastmove =0 ;
-			if((this.lastmove === 4) && ((tanks[i].x === this.x-50 && tanks[i].y===this.y)||(Player.x === this.x-50 && Player.y===this.y)))
+			if((this.lastmove === 4) && ((tanks[i].x === this.x-50 && tanks[i].y===this.y)||(Player.x === this.x-50 && Player.y===this.y)||(ego.x === this.x-50 && ego.y===this.y)))
 				this.lastmove =0 ;
 		}
 	}
@@ -811,7 +830,10 @@ TankPlayer.prototype.setControl=function(){
 			j =e.keyCode-50;
 			tanks.splice(0,tanks.length);
 		}
-		
+		else if(e.keyCode === 13)
+			invinciblePlayer = true;
+		else if(e.keyCode === 85)
+			invincibleEgo =true;
 	}
 
 }	
@@ -928,7 +950,8 @@ TankPlayer.prototype.update=function(){
 	
 
 }		
-
+var invinciblePlayer = false;
+var invincibleEgo = false;
 var Player =  new TankPlayer(width/2-100,height,0, 0, 1, true, 2);//lastmove,action, type, exists,current_direction)
 var tankAi;
 var ego = new Ego(width/2,height,6,true);
@@ -1056,11 +1079,6 @@ var result;
 Player.setControl();
 	
 function loop(){
-	if(ego.exists===false || Player.exists === false){
-		result= false;
-		alert("thua");
-		return;
-	}
 	
 	setTimeout(function(){
 		requestAnimationFrame(loop);
@@ -1158,7 +1176,18 @@ function loop(){
 	},
 	1000 / fps);
 	
+
+if(invinciblePlayer === true)
+	Player.exists = true;
+if(invincibleEgo === true)
+	ego.exists = true;
+if(ego.exists===false || Player.exists === false){
+		result= false;
+		alert("thua");
+		return;
+	}
 }
+
 
 loop();
 
