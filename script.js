@@ -596,7 +596,7 @@ TankAI.prototype.setMove2=function(){
 			}
 			if(check_open===false && check_close===false) // th1
 			{
-				g.set(q,g.get(p)+1);//g[q] = g[p]+1;
+				g.set(q,g.get(p)+50);//g[q] = g[p]+1;
                 f.set(q,g.get(q)+H(q.x,q.y));
                 prev.set(q,p);
                 open.push(q);
@@ -605,9 +605,9 @@ TankAI.prototype.setMove2=function(){
 			
 				if(check_open===true)//q thuoc open
 				{
-					 if(g[q] > g[p]+ 1)  //Nếu đến được q bằng path ngắn hơn thì cập nhật lại q trong Open
+					 if(g[q] > g[p]+ 50)  //Nếu đến được q bằng path ngắn hơn thì cập nhật lại q trong Open
                         {
-                            g.set(q,g.get(p)+1);//g[q] = g[p]+1;
+                            g.set(q,g.get(p)+50);//g[q] = g[p]+1;
                             f.set(q,g.get(q)+H(q.x,q.y));//f[q] = g[q] + H(q.x,q.y);
                             prev.set(q,p);
                         }
@@ -620,7 +620,7 @@ TankAI.prototype.setMove2=function(){
                         {
                         //    Bỏ q khỏi Close;
                         close.splice(close.indexOf(q),1);
-                     	g.set(q,g.get(p)+1);//g[q] = g[p]+1;
+                     	g.set(q,g.get(p)+50);//g[q] = g[p]+1;
                         f.set(q,g.get(q)+H(q.x,q.y));//f[q] = g[q] + H(q.x,q.y);
                          prev.set(q,p);
                         //Thêm q vào Open
@@ -841,111 +841,20 @@ TankPlayer.prototype.update=function(){
 	var i;
 	var j; 
 	if(this.lastmove ===1 && this.y <= height-50 ){
-		i=0;
-		j=0;
-		if(this.y+50 != ego.y || this.x != ego.x)
-			j+=1;
-		for(; i < steel_Array.length;i++)
-			if(this.y + 50 === steel_Array[i].y && this.x === steel_Array[i].x)
-				break;
-			if(i === steel_Array.length)
-				j+=1;
-		i=0;
-		for(; i < river_Array.length;i++)
-			if(this.y + 50 === river_Array[i].y && this.x === river_Array[i].x)
-				break;
-			if(i === river_Array.length)
-				j+=1;
-		i=0;
-		for(; i < block_Array.length;i++)
-			if(this.y + 50 === block_Array[i].y && this.x === block_Array[i].x)
-				break;
-			if(i === block_Array.length)
-				j+=1;
-		if(j===4)
-			this.y +=  50;
+		if(!checkBlock(this.x, this.y +50) && !checkSteel(this.x, this.y +50) && !checkWater(this.x, this.y +50) )
+			this.y+=50;
 	}
 	if(this.lastmove ===2 && this.y > 50){
-		 j=0;
-		 i =0 ;
-		 if(this.y-50 != ego.y || this.x != ego.x)
-			j+=1;
-		 for(; i <steel_Array.length; i++)
-		 	if(this.y-50 === steel_Array[i].y && this.x === steel_Array[i].x)
-		 		break;
-		 	if(i === steel_Array.length)
-		 		j+=1;
-		 i =0 ;
-		 for(; i <river_Array.length; i++)
-		 	if(this.y-50 === river_Array[i].y && this.x === river_Array[i].x)
-		 		break;
-		 	if(i === river_Array.length)
-		 		j+=1;
-		 
-		 i =0 ;
-		 for(; i <block_Array.length; i++)
-		 	if(this.y-50 === block_Array[i].y && this.x === block_Array[i].x)
-		 		break;
-		 	if(i === block_Array.length)
-		 		j+=1;	
-		 if(j===4)
-				this.y -= 50;
+		if(!checkBlock(this.x, this.y -50) && !checkSteel(this.x, this.y -50) && !checkWater(this.x, this.y -50) )
+			this.y-=50;
 	}
 	if(this.lastmove === 3 && this.x <= width-50 ){
-		 j = 0;
-		 i = 0 ;
-		 if(this.y != ego.y || this.x+50 != ego.x)
-			j+=1;
-		for(; i <steel_Array.length; i++)
-		 	if(this.y === steel_Array[i].y && this.x+50 === steel_Array[i].x){
-		 		break;
-		 	}
-		 	if(i === steel_Array.length)
-		 		j+=1;
-		 i = 0 ;
-		for(; i <river_Array.length; i++)
-		 	if(this.y === river_Array[i].y && this.x+50 === river_Array[i].x){
-		 		break;
-		 	}
-		 	if(i === river_Array.length)
-		 		j+=1;
-		  i = 0 ;
-		for(; i <block_Array.length; i++)
-		 	if(this.y === block_Array[i].y && this.x+50 === block_Array[i].x){
-		 		break;
-		 	}
-		 	if(i === block_Array.length)
-		 		j+=1;
-		 if(j===4)
+		if(!checkBlock(this.x+50, this.y) && !checkSteel(this.x+50, this.y) && !checkWater(this.x+50, this.y))
 			this.x += 50;
 		}
 	if(this. lastmove === 4 && this.x > 50){
-		j = 0;
-		 i =0 ;
-		 if(this.y != ego.y || this.x-50 != ego.x)
-			j+=1;
-		for(; i <steel_Array.length; i++)
-		 	if(this.y === steel_Array[i].y && this.x-50 === steel_Array[i].x){
-		 		break;
-		 	}
-		 	if(i === steel_Array.length)
-		 		j+=1;
-		i = 0 ;
-		for(; i <river_Array.length; i++)
-		 	if(this.y === river_Array[i].y && this.x-50 === river_Array[i].x){
-		 		break;
-		 	}
-		 	if(i === river_Array.length)
-		 		j+=1;
-		  i = 0 ;
-		for(; i <block_Array.length; i++)
-		 	if(this.y === block_Array[i].y && this.x-50 === block_Array[i].x){
-		 		break;
-		 	}
-		 	if(i === block_Array.length)
-		 		j+=1;
-		 if(j===4)
-				this.x -= 50;
+		if(!checkBlock(this.x-50, this.y) && !checkSteel(this.x-50, this.y) && !checkWater(this.x-50, this.y))
+			this.x -= 50;
 	}
 	
 
@@ -1039,47 +948,59 @@ river = new River(250,300,1,true);
 river_Array.push(river);
 var bullets=[];
 var fps = 2;
-var j = -1; // luot choi
+ // luot choi
 function TANKAI_SET(j){
-	if(j === 0 || j ===1){
-		var x =150;
+	if(j === 0 || j ===1){ // turn 0 tank attack ego turn 1 tank attack player
+		var y = 50;
 		while(tanks.length < 3){
-			if(tanks.length === 0)
-			var TankAI_ = new TankAI(x,50,1,0,2,true,1);
-			else if(tanks.length ===1){
-				var TankAI_= new TankAI(100,300,1,0,2,true,1);
-			}
-			else if(tanks.length === 2){
-				var TankAI_= new TankAI(100,250,1,0,4,true,1);
-			}
-			//x,y, lastmove,action ,type, exists
-			x+=200;
-				//init Tank 3 loai 2 ngu 1 vua 1 thong minh
+			y+=50;
+		
+			x=random(1,20);
+			while(checkSteel(x*50,y) || checkWater(x*50,y) || checkBlock(x*50,y)){
+				x=random(1,20);
+				}
+			var TankAI_= new TankAI(x*50,y,1,0,2,true,1);
+			
+				
+				
 			tanks.push(TankAI_);
 
 		}
 	}
-		if(j === 2 ){
-		var x =200
+		if(j === 2 ){ //super tank :v
 		while(tanks.length < 1){
-
-			var TankAI_ = new TankAI(x,50,1,0,2,true,1);
+			x = random(1,20);
+			y = random(1,3);
+			while(checkSteel(x*50,y*50) || checkWater(x*50,y*50) || checkBlock(x*50,y*50)){
+				x = random(1,20);
+				y = random(1,3);
+			}
+			var TankAI_ = new TankAI(x*50,y*50,1,0,2,true,1);
 			//x,y, lastmove,action ,type, exists
-			x+=150;
-				//init Tank 3 loai 2 ngu 1 vua 1 thong minh
+			
 			tanks.push(TankAI_);
 
 		}
 	
 	}
 }
-var j = 1;
+var j = -1;
 var map=new Array;
 var result;
 Player.setControl();
 	
 function loop(){
-	
+	if(invinciblePlayer === true)
+		Player.exists = true;
+	if(invincibleEgo === true)
+		ego.exists = true;
+
+
+	if(ego.exists===false || Player.exists === false){
+		result= false;
+		alert("thua");
+		return;
+	}
 	setTimeout(function(){
 		requestAnimationFrame(loop);
 		
@@ -1177,18 +1098,7 @@ function loop(){
 	1000 / fps);
 	
 
-if(invinciblePlayer === true)
-	Player.exists = true;
-if(invincibleEgo === true)
-	ego.exists = true;
-if(ego.exists===false || Player.exists === false){
-		result= false;
-		alert("thua");
-		return;
-	}
 }
-
-
 loop();
 
 /*
