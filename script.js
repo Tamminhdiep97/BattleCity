@@ -1,3 +1,4 @@
+
 var canvas = document.querySelector('canvas');
 var ctx = canvas.getContext('2d') ; //draw 2d;
 var width = canvas.width ;
@@ -523,14 +524,15 @@ TankAI.prototype.setMove2=function(){
 				
 			}
 		}
-		if((p.x===e1.x && p.y===e1.y) || (p.x===e2.x && p.y===e2.y)){
+		if((p.x===e1.x && p.y===e1.y)||(p.x===e2.x && p.y===e2.y) ){
 			close.push(p);
 			flag=true;
 			var q = prev.get(p);
+
 			prev.set(e1,q);
 			break;
 		}
-
+		
 		close.push(p);
 		var index = open.indexOf(p);
 		open.splice(index,1);
@@ -1104,14 +1106,11 @@ loop();
 /*
 function point(x,y){
   this.x=x;
-  this.y = y;
 };
-var m = new Map();
-var c = new point(10,1);
-var b = new point (20,1)
-var a = new point(20,1);
-m.set(a,c);		
-if(m.has(a) === true){
-console.log(m.has(b));
-}
+
+var c = new point(10);
+var b = new point (20)
+var a = new point(20);
+console.log(a===b); // a should equal b
+console.log(a.x===b.x) ;
 */
